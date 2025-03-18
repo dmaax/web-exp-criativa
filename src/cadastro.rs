@@ -12,7 +12,7 @@ pub struct Cadastro {
 // processa o cadastro
 pub async fn cadastrar(cadastro: Form<Cadastro>) -> String {
     let cadastro = cadastro.into_inner();
-// aqui vai a gente coloca a fn hash e verifica as coisas
+// aqui a gente coloca a fn hash e verifica as coisas
  /* 
     if cadastro.senha != cadastro.confirmar_senha {
         return "as senhas não sao iguais ".to_string();
