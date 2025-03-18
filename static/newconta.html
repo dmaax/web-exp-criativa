@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberBank - Nova Conta</title>
+    <link rel="stylesheet" href="/static/index.css">
+</head>
+<body>
+
+    <h2>Crie sua Conta</h2>
+    <form action="/criar-conta" method="POST">
+        <label for="nome">Nome Completo:</label>
+        <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required><br><br>
+
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required><br><br>
+
+        <label for="cpf">CPF:</label>
+        <input type="text" id="cpf" name="cpf" placeholder="Digite seu CPF" required><br><br>
+
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required><br><br>
+
+        <label for="">Confirmar Senha:</label>
+        <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Confirme sua senha" required><br><br>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+</body>
+</html>
