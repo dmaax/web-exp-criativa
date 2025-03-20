@@ -1,6 +1,5 @@
 use rocket::form::Form;
-use bcrypt::{hash, DEFAULT_COST};
-
+use crate::cpf;
 #[derive(FromForm)]
 pub struct Cadastro {
     pub nome: String,
@@ -23,12 +22,6 @@ fn valida_email(email: &str) -> bool{
     email.contains("@") && email.contains(".")
 }
 
-fn hash_senha(senha: &str) -> String{
-    hash(senha, DEFAULT_COST).unwrap()
-}
-
-
-
 // processa o cadastro
 pub async fn cadastrar(cadastro: Form<Cadastro>) -> String {
     let cadastro = cadastro.into_inner();
@@ -41,8 +34,10 @@ pub async fn cadastrar(cadastro: Form<Cadastro>) -> String {
         return "As senhas não são iguais".to_string();
     }
 
-    // https://github.com/andrelmlins/cpf_cnpj
-    
+    if !cpf::validate(&cadastro.cpf){
+        return "Cpf invalido".to_string();
+    }
+
     let senha_hash = hash_senha(&cadastro.senha);
 
     format!("Cadastro realizado com sucesso para {}", cadastro.nome)

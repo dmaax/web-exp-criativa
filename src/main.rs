@@ -3,6 +3,7 @@ use rocket::fs::{FileServer, NamedFile};
 use rocket::form::Form;
 use std::path::Path;
 mod cadastro;
+mod cpf;
  
 // troquei pq a antiga forma (segundo a net da vida) fazia duas req agora ele ja envia direto o index :)
 #[get("/")]
