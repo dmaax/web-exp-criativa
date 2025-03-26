@@ -38,7 +38,7 @@ pub async fn cadastrar(cadastro: Form<Cadastro>) -> String {
         return "Cpf invalido".to_string();
     }
 
-    let senha_hash = hash_senha(&cadastro.senha);
+
 
     format!("Cadastro realizado com sucesso para {}", cadastro.nome)
 }

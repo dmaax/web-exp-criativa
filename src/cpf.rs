@@ -1,5 +1,5 @@
 // https://github.com/andrelmlins/cpf_cnpj
-use rand::Rng;
+
     
 pub fn validate(valor: &str) -> bool {
     let numbers = valor
