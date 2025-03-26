@@ -1,9 +1,7 @@
 #[macro_use] extern crate rocket;
 use rocket::fs::{FileServer, NamedFile};
-use rocket::form::Form;
+use rocket::form::Form; //deixa ele aq, dps a gente vai usar ele
 use std::path::Path;
-mod cadastro;
-mod cpf;
  
 // troquei pq a antiga forma (segundo a net da vida) fazia duas req agora ele ja envia direto o index :)
 #[get("/")]
@@ -18,15 +16,9 @@ async fn html_files(file: &str) -> Option<NamedFile> {
 }
 
 
-#[post("/criar-conta", data = "<cadastro>")]
-async fn cadastrar(cadastro: Form<cadastro::Cadastro>) -> String {
-    cadastro::cadastrar(cadastro).await // espera 
-
-}
-
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![root, html_files, cadastrar])
+        .mount("/", routes![root, html_files])
         .mount("/static", FileServer::from("static"))
 }
