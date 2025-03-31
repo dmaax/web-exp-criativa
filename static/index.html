@@ -7,31 +7,145 @@
     <link rel="stylesheet" href="/static/index.css">
 </head>
 <body>
-    <div class="container">
-        <div class="menu">
-            <div class="logo">CyberBank</div>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="conta">Conta</a></li>
-                <li><a href="#">Transferências</a></li>
-                <li><a href="#">Ajuda</a></li>
-                <li><a href="#">Configurações</a></li>
-            </ul>
-        </div>
-
-        <div class="main-content">
-            <h1>Bem-vindo ao CyberBank</h1>
-            <p>Experiência bancária digital inovadora e segura. Acesse sua conta de onde estiver!</p>
-        </div>
-
-        <div class="footer-top">
-            <p>&copy; 2025 CyberBank. Todos os direitos reservados.</p>
-            <div class="footer-bottom">
-                <a href="#">Política de Privacidade</a>
-                <a href="#">Termos de Uso</a>
-                <a href="#">Política de Cookies</a>
-            </div>
-        </div>
+  <!-- Header -->
+  <header>
+    <div class="container header-container">
+      <div class="logo-nav">
+        <a href="index" class="logo-link">
+          <img src="static/img_index/pucsess.png" alt="PUCPR" class="logo">
+        </a>
+        <nav class="main-nav">
+          <a href="#">Para você</a>
+          <a href="#">Para empresas</a>
+          <a href="#">Ajuda</a>
+          <a href="#">Busca</a>
+        </nav>
     </div>
+        <a href="/static/login_page.html" class="btn btn-primary">Abra sua conta</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Carousel -->
+  <section class="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item">
+        <div class="carousel-overlay">
+          <div class="container">
+            <div class="carousel-content">
+              <h1 class="carousel-title">PUCPR agora tem banco!</h1>
+              <p class="carousel-text">Conte com a gente para se organizar com ofertas que cabem no seu bolso.</p>
+              <button class="btn btn-transparent">Venha conferir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </section>
+
+  <!-- Sessao dos cartoes PUC -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Confira nossos cartões exclusivos da instiuição!</h2>
+      
+      <div class="cards-grid">
+        <!-- Card 1 -->
+        <div class="card">
+          <div class="card-content">
+            <div class="card-image">
+              <img src="/static/img_index/cartaopux.png" alt="Cartão Professor">
+            </div>
+            <h3 class="card-title">Cartão Professor</h3>
+            <p class="card-text">Para professores e pesquisadores</p>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="card-link">
+              Peça seu cartão
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card">
+          <div class="card-content">
+            <div class="card-image">
+              <img src="/static/img_index/cartaopux.png" alt="Cartão Aluno">
+            </div>
+            <h3 class="card-title">Cartão Aluno</h3>
+            <p class="card-text">Para alunos de graduações presenciais ou EAD!</p>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="card-link">
+              Peça o seu
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card">
+          <div class="card-content">
+            <div class="card-image">
+              <img src="/static/img_index/cartaopux.png" alt="Cartão Alumini">
+            </div>
+            <h3 class="card-title">Cartão Alumini</h3>
+            <p class="card-text">Para ex-alunos da PUCPR</p>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="card-link">
+              Peça o seu
+              <svg xmlns="/static/cartaopux.png" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="card">
+          <div class="card-content">
+            <div class="card-image" >
+              <img src="/static/img_index/cartaopux.png" alt="Cartão PUC Parceiro">
+            </div>
+            <h3 class="card-title">Cartão Parceiro Marista</h3>
+            <p class="card-text">Para empresas parceiras do Grupo Marista</p>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="card-link">
+              Peça o seu
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cashback Section -->
+  <section class="section">
+    <div class="container">
+      <div class="cashback-card">
+        <div class="partner-logos">
+          <a href="/static/pavao.png">
+            <img src="/static/img_index/grupobot.png" alt="C&A" class="partner-logo">
+          </a>
+          <img src="/static/img_index/bradesco.png" alt="Renner" class="partner-logo">
+        </div>
+        <div class="cashback-content">
+          <h3>Desconto em Lojas Parceiras</h3>
+          <p>Compras utilizando o cartao PUCPR em lojas parceiras do Grupo Marista tem até 20% de desconto!</p>
+        </div>
+      </div>
+    </div>
+  </section>
 </body>
 </html>

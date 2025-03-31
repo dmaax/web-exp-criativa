@@ -1,0 +1,309 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    text-decoration: none;
+    color: #0066cc;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+header {
+    background-color: #610127;
+    color: white;
+    padding: 15px 0;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    border-radius: 5px;
+}
+
+.logo {
+    width: 64px;
+    height: auto;
+    border-radius: 10px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.btn-outline {
+    background-color: #e0e0e0;
+    color: #555;
+}
+
+.btn-primary {
+    background-color: white;
+    color: #ff0040;
+}
+
+.btn-primary:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.btn-transparent {
+    background-color: transparent;
+    color: white;
+    border: 1px solid white;
+}
+
+.btn-transparent:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.secure-area {
+    display: flex;
+    align-items: center;
+    color: #666;
+    align-items: right;
+    margin-right: 10px;
+}
+
+.lock-icon {
+    margin-right: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Banner styles */
+.banner {
+    background-color: #e31837;
+    padding: 1rem 0;
+}
+
+.banner h2 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: normal;
+}
+
+/* Main content styles */
+.main-content {
+    padding: 2rem 0;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 768px) {
+    .content-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .app-promotion {
+        border-left: 1px solid #e5e5e5;
+        padding-left: 2rem;
+    }
+}
+
+/* Form styles */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+label {
+    color: #333;
+    font-size: 1.125rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+input[type="date"] {
+    height: 3rem;
+    padding: 0 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+}
+
+.login-button {
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    height: 3rem;
+    padding: 0 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    align-self: flex-start;
+}
+
+.login-button:hover {
+    background-color: #004c99;
+}
+
+.register-button {
+    background-color: #e31837;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    height: 3rem;
+    padding: 0 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    align-self: flex-start;
+}
+
+.register-button:hover {
+    background-color: #c01530;
+}
+
+.form-section-title {
+    font-size: 1.25rem;
+    color: #333;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 0.5rem;
+}
+
+/* App promotion styles */
+.app-promotion h3 {
+    color: #333;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+    text-align: left 
+}
+
+.app-content {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-direction: column;
+    align-items: center;
+    text-align: center
+}
+
+.app-image {
+    width: 400px;
+    height: auto;
+}
+
+.app-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.app-text h4 {
+    color: #333;
+    font-size: 1.25rem;
+}
+
+.app-button {
+    background-color: #e31837;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    height: 2.5rem;
+    padding: 0 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    align-self: center;
+}
+
+.app-button:hover {
+    background-color: #c01530;
+}
+
+.tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+}
+
+.tab {
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-weight: bold;
+}
+
+.tab.active {
+    border-bottom: 2px solid #e31837;
+    color: #e31837;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
