@@ -65,7 +65,7 @@ function vpssw(senha1, senha2) {
     if (senha1 !== senha2) {
         return false;
     }
-    let regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+    let regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/; //https://stackoverflow.com/questions/12090077/javascript-regular-expression-password-validation-having-special-characters
 
     if (!regex.test(senha1)) {
         return false;
