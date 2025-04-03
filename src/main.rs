@@ -1,8 +1,12 @@
 #[macro_use] extern crate rocket;
-
-use rocket::fs::{FileServer, NamedFile};
+use dotenv::dotenv;
 use rocket::response::Redirect;
+use rocket::fs::{FileServer, NamedFile};
+use std::env;
 use std::path::Path;
+
+mod cpf;
+mod mail;
 
 #[get("/")]
 fn root() -> Redirect {
@@ -17,7 +21,12 @@ async fn html_files(file: &str) -> Option<NamedFile> {
 
 #[launch]
 fn rocket() -> _ {
+    dotenv().ok();
+
+    let _smtp_user = env::var("SMTP_USER").expect("SMTP_USER não configurado");
+    let _smtp_password = env::var("SMTP_PASSWORD").expect("SMTP_PASSWORD não configurado");
+
     rocket::build()
-        .mount("/", routes![root, html_files])
+        .mount("/", routes![root, html_files, mail::send_verification])
         .mount("/static", FileServer::from("static"))
 }
