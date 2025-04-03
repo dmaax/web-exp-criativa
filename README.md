@@ -6,6 +6,6 @@
 
 ## Rodando
 
-```sudo apt install gcc```
+```sudo apt install gcc``` <br>
 ```cargo run```
 
