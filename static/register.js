@@ -1,4 +1,4 @@
-document.getElementById("login-tab").addEventListener("click", function() {
+document.getElementById("login-tab").addEventListener("click", function () {
     window.location.href = "/static/login_page.html";
 });
 
@@ -12,21 +12,47 @@ function validarCadastro() {
     let confirmarSenha = document.getElementById("confirmPassword").value;
     let cep = document.getElementById("icep").value;
 
+    if (
+        vemail(email) &&
+        vcpf(cpf) &&
+        vidade(dataNascimento) &&
+        vpssw(senha, confirmarSenha) &&
+        vtelefone(telefone) &&
+        vcep(cep)
+    ) {
 
-    if (vemail(email) && vcpf(cpf) && vidade(dataNascimento) && vpssw(senha,confirmarSenha ) && vtelefone(telefone) && vcep(cep)) {
-        fetch('/send_verification', {
+        fetch('/cfCPFbk', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email: email, nome : nome})
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cpf: cpf })
         })
-    }else{
-        window.alert("Alguma informacao esta errada ou invalida, faca o cadastro de novo.")
+        .then(response => response.text())
+        .then(data => {
+            if (data === "true") {
+                fetch("/send_verification", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email, nome: nome }),
+                }).then(() => {
+                    alert("Cadastro iniciado. Verifique seu e-mail.");
+                });
+            } else {
+                window.alert("CPF inválido! Verificado no back-end.");
+            }
+        })
+        .catch(error => {
+            console.error("Erro na verificação do CPF:", error);
+            alert("Erro na comunicação com o servidor.");
+        });
+    } else {
+        window.alert("Alguma informação está errada ou inválida. Faça o cadastro de novo.");
     }
-    
 }
 
-function vidade(dataNascimento) {
 
+function vidade(dataNascimento) {
     let dataNasc = new Date(dataNascimento);
     let hoje = new Date();
     let idade = hoje.getFullYear() - dataNasc.getFullYear();
@@ -46,24 +72,27 @@ function vidade(dataNascimento) {
         return false;
     }
 }
+
 function vemail(email) {
     const regexEmailPucpr = /^[a-zA-Z0-9._%+-]+@pucpr\.edu\.br$/;
     return regexEmailPucpr.test(email);
 }
 
 function vcpf(cpf) {
-    cpf = cpf.replace(/\D/g, ""); 
-    return cpf.length !== 11 ? false && window.alert("erro em CPF") : true;
+    cpf = cpf.replace(/\D/g, "");
+    if (cpf.length !== 11) {
+        window.alert("Erro em CPF.");
+        return false;
+    }
+    return true;
 }
 
-
-// maquina 2 X 1 humano burro
+// máquina 2 x 1 humano burro
 function vpssw(senha1, senha2) {
     if (senha1 !== senha2) return false;
     const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
     return regex.test(senha1);
 }
-
 
 function vtelefone(telefone) {
     const regexTelefone = /^\d{10,11}$/;
@@ -74,5 +103,3 @@ function vcep(cep) {
     const regexCEP = /^\d{5}-?\d{3}$/;
     return regexCEP.test(cep);
 }
-
-

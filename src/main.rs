@@ -27,6 +27,7 @@ fn rocket() -> _ {
     let _smtp_password = env::var("SMTP_PASSWORD").expect("SMTP_PASSWORD não configurado");
 
     rocket::build()
-        .mount("/", routes![root, html_files, mail::send_verification])
+        .mount("/", routes![root, html_files, mail::send_verification, cpf::vcpf])
+
         .mount("/static", FileServer::from("static"))
 }
