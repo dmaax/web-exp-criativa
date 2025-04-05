@@ -89,10 +89,18 @@ function vcpf(cpf) {
 
 // máquina 2 x 1 humano burro
 function vpssw(senha1, senha2) {
-    if (senha1 !== senha2) return false;
-    const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-    return regex.test(senha1);
+    if (senha1 !== senha2) {
+        return false;
+    } else {
+        const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+        if (regex.test(senha1)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
+
 
 function vtelefone(telefone) {
     const regexTelefone = /^\d{10,11}$/;
