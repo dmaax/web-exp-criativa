@@ -9,6 +9,7 @@ use rand::{distributions::Alphanumeric, Rng};
 #[derive(serde::Deserialize)]
 pub struct EmailRequest {
     email: String,
+    nome : String,
 }
 
 
@@ -23,7 +24,7 @@ fn generate_token() -> String {
 #[post("/send_verification", format = "json", data = "<request>")]
 pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static str, Status> {
     let email_address = request.email.trim();
-
+    let nome_pessoa: &str = request.nome.trim();
     if !email_address.contains('@') {
         return Err(Status::BadRequest);
     }
@@ -32,10 +33,10 @@ pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static s
     let verification_url = format!("https://bank.labcyber.xyz/verify?token={}", token);
 
     let email = Message::builder()
-        .from("CyberBank <no-reply@labcyber.xyz.com>".parse().unwrap())
+        .from("PUCBank <no-reply@labcyber.xyz>".parse().unwrap())
         .to(email_address.parse().unwrap())
         .subject("Verifique Seu Email")
-        .body(format!("Clique no link para verificar seu email: {}", verification_url))
+        .body(format!("Ola {}, Clique no link para verificar seu email: {}",nome_pessoa, verification_url))
         .unwrap();
 
     let smtp_user = env::var("SMTP_USER").expect("SMTP_USER not set");

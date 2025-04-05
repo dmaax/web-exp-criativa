@@ -3,25 +3,23 @@ document.getElementById("login-tab").addEventListener("click", function() {
 });
 
 function validarCadastro() {
-    let nomeCompleto = document.getElementById("iname").value;
+    let nome = document.getElementById("iname").value;
     let email = document.getElementById("iemail").value;
     let cpf = document.getElementById("icpf").value;
     let dataNascimento = document.getElementById("ibirthdate").value;
     let telefone = document.getElementById("icellphone").value;
     let senha = document.getElementById("password").value;
     let confirmarSenha = document.getElementById("confirmPassword").value;
-    let rua = document.getElementById("istreet").value;
-    let numero = document.getElementById("inumero") ? document.getElementById("inumero").value : "";
-    let complemento = document.getElementById("icomplemento") ? document.getElementById("icomplemento").value : "";
-    let bairro = document.getElementById("ibairro") ? document.getElementById("ibairro").value : "";
-    let cidade = document.getElementById("icity").value;
-    let estado = document.getElementById("istate").value;
     let cep = document.getElementById("icep").value;
 
-    if (vemail(email) && vcpf(cpf) && vidade(dataNascimento) && vpssw(senha,confirmarSenha )) {
-        
-    }
-    else{
+
+    if (vemail(email) && vcpf(cpf) && vidade(dataNascimento) && vpssw(senha,confirmarSenha ) && vtelefone(telefone) && vcep(cep)) {
+        fetch('/send_verification', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email: email, nome : nome})
+        })
+    }else{
         window.alert("Alguma informacao esta errada ou invalida, faca o cadastro de novo.")
     }
     
@@ -48,29 +46,33 @@ function vidade(dataNascimento) {
         return false;
     }
 }
-function vemail(email) { return true; }
+function vemail(email) {
+    const regexEmailPucpr = /^[a-zA-Z0-9._%+-]+@pucpr\.edu\.br$/;
+    return regexEmailPucpr.test(email);
+}
 
 function vcpf(cpf) {
-    function vcpf(cpf) {
-        cpf = cpf.replace(/\D/g, ""); 
-
-        if (cpf.length !== 11) {
-            return false;
-        }
-    
-        return true;
-    }
+    cpf = cpf.replace(/\D/g, ""); 
+    return cpf.length !== 11 ? false && window.alert("erro em CPF") : true;
 }
+
+
+// maquina 2 X 1 humano burro
 function vpssw(senha1, senha2) {
-    if (senha1 !== senha2) {
-        return false;
-    }
-    let regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/; //https://stackoverflow.com/questions/12090077/javascript-regular-expression-password-validation-having-special-characters
-
-    if (!regex.test(senha1)) {
-        return false;
-    }
-
-    return true;
+    if (senha1 !== senha2) return false;
+    const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+    return regex.test(senha1);
 }
+
+
+function vtelefone(telefone) {
+    const regexTelefone = /^\d{10,11}$/;
+    return regexTelefone.test(telefone);
+}
+
+function vcep(cep) {
+    const regexCEP = /^\d{5}-?\d{3}$/;
+    return regexCEP.test(cep);
+}
+
 
