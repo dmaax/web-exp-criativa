@@ -57,15 +57,20 @@ function verificaidade(i) {
 function resultadosenha(s1, s2) {
     if (s1 !== s2) {
         return false;
+    }
+
+    const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+
+    if (regex.test(s1)) {
+        const senha = document.getElementById("password").value;
+        const hash = CryptoJS.SHA256(senha).toString(CryptoJS.enc.Hex);
+        console.log("Hash da senha:", hash);
+        return true;
     } else {
-        const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-        if (regex.test(s1)) {
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 }
+
 
 function resultadotelefone(telefone) {
     const regexTelefone = /^\d{10,11}$/;
@@ -84,6 +89,9 @@ function resultadocep(cp) {
     }
     return true;
 }
+
+
+
 
 async function validarCadastro() {
     let nome = document.getElementById("iname").value;
