@@ -114,21 +114,10 @@ async function validarCadastro() {
         }
     }
 
-
     let resultadoidade = verificaidade(dataNascimento);
     let resultadosenhaok = resultadosenha(senha, confirmarSenha);
     let resultadotelefoneok = resultadotelefone(telefone);
     let resultadocepok = resultadocep(cep);
-
-    console.log({
-        resultadocpfbasico,
-        resultadoemail,
-        resultadocpfbkend,
-        resultadoidade,
-        resultadosenhaok,
-        resultadotelefoneok,
-        resultadocepok
-    });
 
     if (
         resultadocpfbasico &&
@@ -138,6 +127,13 @@ async function validarCadastro() {
         resultadosenhaok &&
         resultadotelefoneok &&
         resultadocepok
-    ) {window.alert("GG");}
-
+    ) {
+        window.alert("Email enviado para confirmar conta");
+        fetch("/send_verification", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email, nome: nome }),
+        });
+    }
 }
+    
