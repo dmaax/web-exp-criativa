@@ -7,12 +7,11 @@ pub fn valida_codigo_autenticador(codigo: String) -> String {
         .duration_since(SystemTime::UNIX_EPOCH)
         .unwrap()
         .as_secs();
-
-    // Gera e retorna o código TOTP baseado no segredo e tempo
+    // gera o cod
     totp_custom::<Sha1>(
-        DEFAULT_STEP, // Intervalo de 30 segundos
-        6,            // Código de 6 dígitos
+        DEFAULT_STEP, //30 seg
+        6,            // Codigo de 6 DIGIIITU
         &base32::decode(&codigo.trim().to_lowercase()).unwrap(),
-        seconds,      // Tempo atual em segundos
+        seconds,      // tempo atual em segundos
     )
 }
