@@ -1,19 +1,17 @@
-#[macro_use] extern crate rocket;
-use dotenv::dotenv;
-use rocket::response::Redirect;
-use rocket::fs::{FileServer, NamedFile};
 use rocket::serde::json::Json;
 use rocket::http::Status;
 use std::env;
-use std::path::Path;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 use rand::{distributions::Alphanumeric, Rng};
 
+
 #[derive(serde::Deserialize)]
-struct EmailRequest {
+pub struct EmailRequest {
     email: String,
+    nome : String,
 }
+
 
 fn generate_token() -> String {
     rand::thread_rng()
@@ -23,24 +21,10 @@ fn generate_token() -> String {
         .collect()
 }
 
-mod cpf;
-mod mail;
-
-#[get("/")]
-fn root() -> Redirect {
-    Redirect::to(uri!("/index"))
-}
-
-#[get("/<file>")]
-async fn html_files(file: &str) -> Option<NamedFile> {
-    let path = format!("static/{}.html", file);
-    NamedFile::open(Path::new(&path)).await.ok()
-}
-
 #[post("/send_verification", format = "json", data = "<request>")]
-async fn send_verification(request: Json<EmailRequest>) -> Result<&'static str, Status> {
+pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static str, Status> {
     let email_address = request.email.trim();
-
+    let nome_pessoa: &str = request.nome.trim();
     if !email_address.contains('@') {
         return Err(Status::BadRequest);
     }
@@ -49,10 +33,10 @@ async fn send_verification(request: Json<EmailRequest>) -> Result<&'static str, 
     let verification_url = format!("https://bank.labcyber.xyz/verify?token={}", token);
 
     let email = Message::builder()
-        .from("CyberBank <no-reply@labcyber.xyz>".parse().unwrap())
+        .from("PUCBank <no-reply@labcyber.xyz>".parse().unwrap())
         .to(email_address.parse().unwrap())
         .subject("Verifique Seu Email")
-        .body(format!("Clique no link para verificar seu email: {}", verification_url))
+        .body(format!("Ola {}, Clique no link para verificar seu email: {}",nome_pessoa, verification_url))
         .unwrap();
 
     let smtp_user = env::var("SMTP_USER").expect("SMTP_USER not set");
@@ -68,16 +52,4 @@ async fn send_verification(request: Json<EmailRequest>) -> Result<&'static str, 
         Ok(_) => Ok("Email Enviado!"),
         Err(_) => Err(Status::InternalServerError),
     }
-}
-
-#[launch]
-fn rocket() -> _ {
-    dotenv().ok();
-
-    let _smtp_user = env::var("SMTP_USER").expect("SMTP_USER não configurado");
-    let _smtp_password = env::var("SMTP_PASSWORD").expect("SMTP_PASSWORD não configurado");
-
-    rocket::build()
-        .mount("/", routes![root, html_files, mail::send_verification, cpf::vcpf])
-        .mount("/static", FileServer::from("static"))
 }
