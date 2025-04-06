@@ -82,4 +82,3 @@ pub async fn vcpf(cpf_data: Json<CpfConf>) -> Result<String, Status> {
 }
 
 
-
