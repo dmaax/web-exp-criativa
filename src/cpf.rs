@@ -1,8 +1,9 @@
 // https://github.com/andrelmlins/cpf_cnpj
 
+use rocket::{http::Status, serde::json::Json};
 #[derive(serde::Deserialize)]
 pub struct CpfConf {
-    cpf: String,
+    pub cpf: String,
 }
   
 pub fn validate(valor: &str) -> bool {
@@ -74,12 +75,9 @@ fn equal_digits(numbers: &Vec<char>) -> bool {
     return true;
 }
 
-use rocket::{http::Status, serde::json::Json};
-
-#[post("/cfCPFbk", data = "<cpf_data>")]
+#[post("/cfCPFbk", format = "json", data = "<cpf_data>")]
 pub async fn vcpf(cpf_data: Json<CpfConf>) -> Result<String, Status> {
-    let valido = validate(&cpf_data.cpf);
-    println!("{}", valido);
+    let valido: bool = validate(&cpf_data.cpf);
     Ok(valido.to_string())
 }
 
