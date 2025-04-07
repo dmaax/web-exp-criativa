@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="/static/login_style.css"/>
+  <title>Verificação MFA</title>
+</head>
+<body>
+
+  <header>
+    <div class="container header-container">
+      <div class="logo-nav">
+        <a href="index.html" class="logo-link">
+          <img src="/static/img_index/pucsess.png" alt="PUCPR" class="logo">
+          <div class="header-right"></div>
+        </a>
+      </div>
+      <div class="secure-area">
+        <svg class="lock-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>Área Segura</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="banner">
+    <div class="container">
+      <h2>Verificação em Duas Etapas</h2>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="tabs">
+        <div class="tab active" id="mfa-tab">Verificação</div>
+        <div class="tab" id="dummy-tab"></div>
+      </div>
+      <div class="content-grid">
+        <!-- MFA Form -->
+        <div class="login-section">
+          <form class="login-form" onsubmit="event.preventDefault(); verificarMFA();">
+            <div class="form-group">
+              <label for="codigoMFA">Código MFA</label>
+              <input type="text" id="codigoMFA" name="codigoMFA" placeholder="Ex: 123456">
+            </div>
+
+            <button type="submit" class="login-button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              Verificar
+            </button>
+            <p id="resultado" style="margin-top: 15px; font-weight: bold;"></p>
+          </form>
+        </div>
+
+        <div class="app-promotion">
+          <h3>Proteja sua conta</h3>
+          <div class="app-content">
+            <img src="/static/img_login/anuncio.jpg" alt="MFA App" class="app-image">
+            <div class="app-text">
+              <h4>Use Google Authenticator ou Authy</h4>
+              <button class="app-button" onclick="window.location.href='https://www.pucpr.br/'">
+                Saiba mais sobre segurança
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    async function verificarMFA() {
+      const codigo = document.getElementById("codigoMFA").value;
+      const resultado = document.getElementById("resultado");
+
+      const resposta = await fetch('/verifica_mfa', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ codigo })
+      });
+
+      const texto = await resposta.text();
+
+      if (texto === "true") {
+        resultado.textContent = "✅ Código verificado com sucesso!";
+        resultado.style.color = "green";
+        setTimeout(() => {
+          window.location.href = "/static/index.html";
+        }, 1500);
+      } else {
+        resultado.textContent = "❌ Código inválido!";
+        resultado.style.color = "red";
+      }
+    }
+  </script>
+</body>
+</html>

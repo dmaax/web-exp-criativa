@@ -10,3 +10,7 @@ tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 rand = "0.8"
 dotenv = "0.15"
+koibumi-base32 = "0.0.3"
+totp-lite = "2.0.1"
+
+
