@@ -5,7 +5,7 @@ use rocket::http::Status;
 use rocket::serde::{Deserialize, json::Json};
 
 #[derive(Debug, Deserialize)]
-pub struct Codigo_MFA {
+pub struct CodigoMfa {
     pub codigo: String,
 }
 
@@ -23,7 +23,7 @@ pub fn valida_codigo_autenticador(codigo: String) -> String {
 }
 
 #[post("/verifica_mfa", format = "json", data = "<entrada_codigo>")]
-pub async fn vcod(entrada_codigo: Json<Codigo_MFA>) -> Result<String, Status> {
+pub async fn vcod(entrada_codigo: Json<CodigoMfa>) -> Result<String, Status> {
     let x = "ea273b66in5pvp64sg2gigpwuu".to_string();
 
     let saida_codigo: String = valida_codigo_autenticador(x);

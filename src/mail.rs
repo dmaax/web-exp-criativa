@@ -3,7 +3,7 @@ use rocket::http::Status;
 use std::env;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
-use rand::{distributions::Alphanumeric, Rng};
+//use rand::{distributions::Alphanumeric, Rng};
 
 //use crate::newcodmfa; dx isso aq 
 
@@ -14,7 +14,7 @@ pub struct EmailRequest {
     nome : String,
 }
 
-
+/* 
 fn generate_token() -> String {
     rand::thread_rng()
         .sample_iter(&Alphanumeric)
@@ -22,7 +22,7 @@ fn generate_token() -> String {
         .map(char::from)
         .collect()
 }
-
+*/
 #[post("/send_verification", format = "json", data = "<request>")]
 pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static str, Status> {
     let email_address = request.email.trim();
@@ -30,10 +30,10 @@ pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static s
     if !email_address.contains('@') {
         return Err(Status::BadRequest);
     }
-
-    let token = generate_token();
-    //esse aq tb dx comentado, futuramente a gente add isso
+    
+    //let token = generate_token();
     //let verification_url = format!("https://bank.labcyber.xyz/verify?token={}", token);
+    //vai ficar assim ate ficar pronto
     let verification_url: &str = "http://127.0.0.1:5500/static/conf_email.html";
 
     //let codigo_autenticador_usr: String = newcodmfa::gerar_segredo();
