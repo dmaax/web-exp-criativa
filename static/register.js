@@ -104,7 +104,8 @@ async function validarCadastro() {
     let cep = document.getElementById("icep").value;
 
 
-    
+
+
     cpf = cpf.replace(/\D/g, '');
     telefone = telefone.replace(/\D/g, '');
     cep = cep.replace(/\D/g, '');
@@ -126,6 +127,16 @@ async function validarCadastro() {
     let resultadosenhaok = resultadosenha(senha, confirmarSenha);
     let resultadotelefoneok = resultadotelefone(telefone);
     let resultadocepok = resultadocep(cep);
+
+    console.log("Validação individual:");
+    console.log("resultadocpfbasico:", resultadocpfbasico);
+    console.log("resultadoemail:", resultadoemail);
+    console.log("resultadocpfbkend:", resultadocpfbkend);
+    console.log("resultadoidade:", resultadoidade);
+    console.log("resultadosenhaok:", resultadosenhaok);
+    console.log("resultadotelefoneok:", resultadotelefoneok);
+    console.log("resultadocepok:", resultadocepok);
+
 
     if (
         resultadocpfbasico &&
@@ -159,9 +170,7 @@ function login(event) {
   
     return false;
 }
-document.getElementById("register-tab").addEventListener("click", function () {
-    window.location.href = "/static/register_page.html";
-});
+
 
 
 
