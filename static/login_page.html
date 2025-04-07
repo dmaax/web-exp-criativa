@@ -44,7 +44,8 @@
         <div class="content-grid">
           <!-- Login Form -->
           <div class="login-section">
-            <form class="login-form">
+            <form class="login-form" onsubmit="return login(event)">
+
               <div class="form-group">
                 <label for="userId">User ID</label>
                 <input type="text" id="userId" name="userId">
@@ -75,7 +76,7 @@
               <img src="/static/img_login/anuncio.jpg" alt="Mobile banking app" class="app-image">
               <div class="app-text">
                 <h4>A melhor faculdade do Paraná!</h4>
-                <button class="app-button" onclick="window.location.href='https//www.pucpr.br/'">Clique aqui para se matricular</button>
+                <button class="app-button" onclick="window.location.href='https://www.pucpr.br/'">Clique aqui para se matricular</button>
               </div>
             </div>
   
@@ -86,9 +87,5 @@
   
 
   </body>
-  <script>
-    document.getElementById("register-tab").addEventListener("click", function() {
-        window.location.href = "/static/register_page.html"; 
-    });
-</script>
+  <script src="/static/register.js"></script>
   </html>
