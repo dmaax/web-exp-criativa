@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/login_style.css">
+    <link rel="stylesheet" href="/static/forgot_style.css">
     <title>Cadastro</title>
 
 </head>
@@ -13,7 +13,7 @@
         <div class="container header-container">
           <div class="logo-nav">
             <a href="index.html" class="logo-link">
-              <img src="pucsess.png" alt="PUCPR" class="logo">
+              <img src="/static/img_index/pucsess.png" alt="PUCPR" class="logo">
               <div class="header-right"></div>
             </a>
           </div>
@@ -30,38 +30,25 @@
     <!-- Red Banner -->
     <div class="banner">
       <div class="container">
-        <h2>Entre na sua conta</h2>
+        <h2>Multi Factor Authenticator</h2>
       </div>
     </div>
   
     <!-- Main Content -->
     <main class="main-content">
       <div class="container">
-        <div class="tabs">
-          <div class="tab active" id="login-tab" >Login</div>
-          <div class="tab " id="register-tab">Cadastro</div>
-      </div>
+      
         <div class="content-grid">
           <!-- Login Form -->
           <div class="login-section">
+            <h1>Coloque o código autenticador</h1>
+            <span></span>
             <form class="login-form">
-              <div class="form-group">
-                <label for="userId">User ID</label>
-                <input type="text" id="userId" name="userId">
+              <div class="codigo-form">
+                <label for="code">Código de verificação</label>
+                <input type="text" id="codigo" name="codigoVerifi">
               </div>
-  
-              <div class="form-group">
-                <label for="password">Senha</label>
-                <input type="password" id="password" name="password">
-                <div style="margin-top: 0.5rem;">
-                  <a href="/static/forgot_page.html">Esqueceu sua senha?</a>
-                </div>
-              </div>
-               <button type="submit" class="login-button">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
+              <button type="submit" class="login-button">
                 Entrar
               </button>
             </form>
@@ -73,7 +60,7 @@
             <div class="app-content">
               <img src="/static/img_login/anuncio.jpg" alt="Mobile banking app" class="app-image">
               <div class="app-text">
-                <h4>A melhor faculdade do Paraná!</h4>
+                <h4>A melhor faculdade partiular do Paraná!</h4>
                 <button class="app-button" onclick="window.location.href='https://www.pucpr.br/'">Clique aqui para se matricular</button>
               </div>
             </div>

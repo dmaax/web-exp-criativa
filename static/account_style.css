@@ -1,0 +1,164 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+}
+
+header {
+    background-color: #610127;
+    color: white;
+    padding: 15px 0;
+  }
+
+  .header-container {
+    
+    justify-content: space-between;
+    align-items: center;
+    
+  }
+
+  .logo-nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    border-radius: 5px;
+    margin-left: 10%;
+  }
+
+  .logo {
+    width: 64px;
+    height: auto;
+    border-radius: 10px;
+  }
+
+
+
+.container {
+    display: flex;
+    margin: 0 auto
+}
+
+.sidebar {
+    width: 260px;
+    background-color: white;
+    border-right: 1px solid #e0e0e0;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+
+.section-title {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.card {
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.account-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #E3F2FD;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.account-label {
+    color: #0052D4;
+    font-weight: bold;
+}
+
+.account-balance {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0052D4;
+}
+
+.menu-section {
+    margin-bottom: 20px;
+}
+
+.menu-title {
+    padding: 15px;
+    font-weight: bold;
+    color: #333;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: #333;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+}
+
+.menu-item:hover {
+    background-color: #f5f5f5;
+    border-left-color: #0052D4;
+}
+
+.menu-item.active {
+    background-color: #E3F2FD;
+    border-left-color: #0052D4;
+}
+
+.menu-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    color: #0052D4;
+}
+
+.menu-text {
+    flex: 1;
+}
+
+
+.hide-values {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    
+}
+
+.loan-botao {
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    height: 3rem;
+    padding: 0 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    align-self: flex-start;
+}
+.loan-botao:hover{
+    background-color: rgb(1, 145, 1);
+}
