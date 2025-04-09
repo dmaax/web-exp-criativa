@@ -20,7 +20,7 @@ function verificacpfbasico(c) {
 }
 
 async function verificacpfbkend(c2) {
-    const response = await fetch('http://127.0.0.1:8000/cfCPFbk', {
+    const response = await fetch('/cfCPFbk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cpf: c2 })
@@ -104,8 +104,6 @@ async function validarCadastro() {
     let cep = document.getElementById("icep").value;
 
 
-
-
     cpf = cpf.replace(/\D/g, '');
     telefone = telefone.replace(/\D/g, '');
     cep = cep.replace(/\D/g, '');
@@ -138,23 +136,15 @@ async function validarCadastro() {
     console.log("resultadocepok:", resultadocepok);
 
 
-    if (
-        resultadocpfbasico &&
-        resultadoemail &&
-        resultadocpfbkend &&
-        resultadoidade &&
-        resultadosenhaok &&
-        resultadotelefoneok &&
-        resultadocepok
-    ) {
+    if (resultadocpfbasico &&resultadoemail && resultadocpfbkend && resultadoidade &&resultadosenhaok && resultadotelefoneok && resultadocepok) {
         window.alert("Email enviado para confirmar conta");
+    
         fetch("/send_verification", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: email, nome: nome }),
-        });
+        })
     }
-    window.location.href = "/static/login_page.html";
 }
 
 
