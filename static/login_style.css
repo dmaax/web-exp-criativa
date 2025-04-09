@@ -109,7 +109,6 @@
     height: 1rem;
   }
 
-  /* Banner styles */
   .banner {
     background-color: #e31837;
     padding: 1rem 0;
@@ -121,7 +120,6 @@
     font-weight: normal;
   }
   
-  /* Main content styles */
   .main-content {
     padding: 2rem 0;
   }
@@ -143,7 +141,6 @@
     }
   }
   
-  /* Login form styles */
   .login-form {
     display: flex;
     flex-direction: column;
@@ -191,7 +188,6 @@
     background-color: #004c99;
   }
   
-  /* App promotion styles */
   .app-promotion h3 {
     color: #333;
     font-size: 1.25rem;

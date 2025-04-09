@@ -110,7 +110,6 @@ header {
     height: 1rem;
 }
 
-/* Banner styles */
 .banner {
     background-color: #e31837;
     padding: 1rem 0;
@@ -144,7 +143,6 @@ header {
     }
 }
 
-/* Form styles */
 .login-form {
     display: flex;
     flex-direction: column;
@@ -233,7 +231,6 @@ input[type="date"] {
     padding-bottom: 0.5rem;
 }
 
-/* App promotion styles */
 .app-promotion h3 {
     color: #333;
     font-size: 1.25rem;
