@@ -34,7 +34,7 @@ pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static s
     //let token = generate_token();
     //let verification_url = format!("https://bank.labcyber.xyz/verify?token={}", token);
     //vai ficar assim ate ficar pronto
-    let verification_url: &str = "http://127.0.0.1:5500/static/conf_email.html";
+    let verification_url: &str = "http://127.0.0.1:8000/static/conf_email.html";
 
     //let codigo_autenticador_usr: String = newcodmfa::gerar_segredo();
     // futuramente add essa linha, agora vai ficar uma "senha" fixa para mostrar na primiera sprint
