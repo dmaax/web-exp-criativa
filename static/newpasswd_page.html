@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/forgot_style.css">
+    <link rel="stylesheet" href="/static/login_style.css">
     <title>Cadastro</title>
 
 </head>
@@ -30,27 +30,32 @@
     <!-- Red Banner -->
     <div class="banner">
       <div class="container">
-        <h2>Recupere sua conta</h2>
+        <h2>Mude sua senha</h2>
       </div>
     </div>
   
     <!-- Main Content -->
     <main class="main-content">
       <div class="container">
-      
+        
         <div class="content-grid">
           <!-- Login Form -->
           <div class="login-section">
-            <h1>Coloque seu cpf para receber o codigo de verificação no e-mail</h1>
-            <span></span>
             <form class="login-form">
               <div class="form-group">
-                <label for="userId">CPF</label>
+                <label for="userId">Nova senha</label>
                 <input type="text" id="userId" name="userId">
               </div>
-             
-              <button type="button" class="login-button" id="send-email">
-                Enviar E-mail
+  
+              <div class="form-group">
+                <label for="password">Confirmar nova senha</label>
+                <input type="password" id="password" name="password">
+                
+              </div>
+  
+              <button type="submit" class="login-button">
+                
+                Mudar senha
               </button>
             </form>
           </div>
@@ -61,7 +66,7 @@
             <div class="app-content">
               <img src="/static/img_login/anuncio.jpg" alt="Mobile banking app" class="app-image">
               <div class="app-text">
-                <h4>A melhor faculdade partiular do Paraná!</h4>
+                <h4>A melhor faculdade do Paraná!</h4>
                 <button class="app-button" onclick="window.location.href='https://www.pucpr.br/'">Clique aqui para se matricular</button>
               </div>
             </div>
@@ -74,8 +79,8 @@
 
   </body>
   <script>
-    document.getElementById("send-email").addEventListener("click", function() {
-        window.location.href = "/static/code_page.html"; 
+    document.getElementById("register-tab").addEventListener("click", function() {
+        window.location.href = "/static/register_page.html"; 
     });
 </script>
   </html>
