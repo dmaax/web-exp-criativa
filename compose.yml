@@ -1,0 +1,12 @@
+services:
+  rocket-app:
+    image: dmaax/web-exp-criativa:v1
+    container_name: rocket-app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      ROCKET_ENV: development  # optional override
+    restart: unless-stopped
+
