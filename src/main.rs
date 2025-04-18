@@ -16,7 +16,7 @@ fn root() -> Redirect {
 
 #[get("/<file>")]
 async fn html_files(file: &str) -> Option<NamedFile> {
-    let path = format!("static/html/{}.html", file);
+    let path: String = format!("static/html/{}.html", file);
     NamedFile::open(Path::new(&path)).await.ok()
 }
 
@@ -24,8 +24,8 @@ async fn html_files(file: &str) -> Option<NamedFile> {
 fn rocket() -> _ {
     dotenv().ok();
 
-    let _smtp_user = env::var("SMTP_USER").expect("SMTP_USER não configurado");
-    let _smtp_password = env::var("SMTP_PASSWORD").expect("SMTP_PASSWORD não configurado");
+    let _smtp_user: Box<str> = env::var("SMTP_USER").expect("SMTP_USER não configurado").into();
+    let _smtp_password: Box<str> = env::var("SMTP_PASSWORD").expect("SMTP_PASSWORD não configurado").into();
 
     rocket::build()
         .mount("/", routes![root, html_files, mail::send_verification, cpf::vcpf, autenticador::vcod])

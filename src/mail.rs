@@ -37,7 +37,7 @@ fn generate_token() -> String {
 #[post("/send_verification", format = "json", data = "<request>")]
 pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static str, Status> {
     
-    let email_address = request.email.trim();
+    let email_address:&str = request.email.trim();
     let nome_pessoa: &str = request.nome.trim();
     if !email_address.contains('@') {
         return Err(Status::BadRequest);
