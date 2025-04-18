@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="/static/login_style.css"/>
+  <link rel="stylesheet" href="/static/css/login_style.css"/>
   <title>Verificação MFA</title>
-  <link rel="icon" type="image/png" href="/static/dc_ls_bk_lg.png">
+  <link rel="icon" type="image/png" href="/static/logo/dc_ls_bk_lg.png">
 </head>
 <body>
 
   <header>
     <div class="container header-container">
       <div class="logo-nav">
-        <a href="index.html" class="logo-link">
+        <a href="/static/html/index.html" class="logo-link">
           <img src="/static/img_index/pucsess.png" alt="PUCPR" class="logo">
           <div class="header-right"></div>
         </a>
@@ -77,9 +77,9 @@
     </div>
   </main>
 
-  <script src="/static/verifica_mfa.js" type="module"></script>
+  <script src="/static/js/verifica_mfa.js" type="module"></script>
   <script type="module">
-    import { verificarMFA } from '/static/verifica_mfa.js';
+    import { verificarMFA } from '/static/js/verifica_mfa.js';
 
     document.getElementById('botaoVerificar').addEventListener('click', (event) => {
       event.preventDefault();

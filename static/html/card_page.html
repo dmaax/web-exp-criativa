@@ -5,16 +5,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/account_style.css">
+    <link rel="stylesheet" href="/static/css/account_style.css">
     <title>Conta Bancaria</title>
-    <link rel="icon" type="image/png" href="/static/dc_ls_bk_lg.png">
+    <link rel="icon" type="image/png" href="/static/logo/dc_ls_bk_lg.png">
 
 
     <header>
         <div class="container header-container">
           <div class="logo-nav">
-            <a href="index.html" class="logo-link">
-              <img src="pucsess.png" alt="PUCPR" class="logo">
+            <a href="/static/html/index.html" class="logo-link">
+              <img src="/static/logo/pucsess.png" alt="PUCPR" class="logo">
             </a>
         </div>
       </header>
@@ -25,22 +25,22 @@
             
             <div class="menu-section">
                 <div class="menu-title">Menu</div>
-                <a href="account_page.html" class="menu-item">
+                <a href="/static/html/account_page.html" class="menu-item">
                     <div class="menu-icon">&#128178;</div>
                     <div class="menu-text">Conta cliente</div>
                     
                 </a>
-                <a href="emprestimo_page.html" class="menu-item active">
+                <a href="/static/html/emprestimo_page.html" class="menu-item">
                     <div class="menu-icon">&#128184;</div>
                     <div class="menu-text">Empréstimos</div>
                     
                 </a>
-                <a href="card_page.html" class="menu-item">
+                <a href="/static/html/card_page.html" class="menu-item active">
                     <div class="menu-icon">&#128179;</div>
                     <div class="menu-text">Cartões</div>
                     
                 </a>
-                <a href="dashboard.html" class="menu-item">
+                <a href="/static/html/dashboard.html" class="menu-item">
                     <div class="menu-icon">&#128176;</div>
                     <div class="menu-text">Dashboard</div>
                 </a>
@@ -49,13 +49,21 @@
         </aside>
         <main class="main-content">
             <div class="card">
-                    <h2 class="section-title">Emprestimos disponiveis:</h2>
+                    <h2 class="section-title">Cartao Estudante</h2>
                 <div class="account-summary">
-                    <div class="account-label">Emprestimo estudante</div>
-                    <div class="account-balance" id="emprest">R$ 12.500,00</div>
-                    <button type="submit" class="loan-botao">Pegar</button>
+                    <div class="account-label">Final 9999</div>
+                    <div class="account-balance" id="emprest">Utilizado: R$ 00,00</div>
+                    <div class="account-balance" id="emprest">Disponivel: R$ 1.000,00</div>
                 </div>
             </div>
+            <div class="card">
+                <h2 class="section-title">Cartao Grupo Marista</h2>
+            <div class="account-summary">
+                <div class="account-label">Final 1234</div>
+                <div class="account-balance" id="emprest">Utilizado: R$ 00,00</div>
+                <div class="account-balance" id="emprest">Disponivel: R$ 1.000,00</div>
+            </div>
+        </div>
         </main>
     </div>
 </body>

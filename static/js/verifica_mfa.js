@@ -22,7 +22,7 @@ export async function verificarMFA() {
       resultado.textContent = "✅ Código verificado com sucesso!";
       resultado.style.color = "green";
       setTimeout(() => {
-        window.location.href = "/static/account_page.html";
+        window.location.href = "/static/html/account_page.html";
       }, 1500);
     } else {
       resultado.textContent = "❌ Código inválido!";

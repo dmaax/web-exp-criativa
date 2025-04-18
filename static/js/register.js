@@ -1,5 +1,5 @@
 document.getElementById("login-tab").addEventListener("click", function () {
-    window.location.href = "/static/login_page.html";
+    window.location.href = "/static/html/login_page.html";
 });
 
 function verificaemail(e) {
