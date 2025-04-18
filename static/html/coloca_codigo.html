@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="/static/login_style.css"/>
+  <link rel="stylesheet" href="/static/css/login_style.css"/>
   <title>Verificação MFA</title>
-  <link rel="icon" type="image/png" href="/static/dc_ls_bk_lg.png">
+  <link rel="icon" type="image/png" href="/static/logo/dc_ls_bk_lg.png">
 </head>
 <body>
 
   <header>
     <div class="container header-container">
       <div class="logo-nav">
-        <a href="index.html" class="logo-link">
+        <a href="/static/html/index.html" class="logo-link">
           <img src="/static/img_index/pucsess.png" alt="PUCPR" class="logo">
           <div class="header-right"></div>
         </a>
@@ -43,13 +43,13 @@
       <div class="content-grid">
       
         <div class="login-section">
-          <form class="login-form" onsubmit="event.preventDefault(); verificarMFA();">
+          <form class="login-form" id="formMFA">
             <div class="form-group">
               <label for="codigoMFA">Código MFA</label>
               <input type="text" id="codigoMFA" name="codigoMFA" placeholder="Ex: 123456">
             </div>
 
-            <button type="submit" class="login-button">
+            <button type="button" class="login-button" id="botaoVerificar">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -67,7 +67,7 @@
             <img src="/static/img_login/anuncio.jpg" alt="MFA App" class="app-image">
             <div class="app-text">
               <h4>Use Google Authenticator ou Authy</h4>
-              <button class="app-button" onclick="window.location.href='https://www.pucpr.br/'">
+              <button class="app-button" onclick="window.location.href='https://pucpr.br'">
                 Saiba mais sobre segurança
               </button>
             </div>
@@ -77,32 +77,20 @@
     </div>
   </main>
 
-  <script>
-    async function verificarMFA() {
-      const codigo = document.getElementById("codigoMFA").value;
-      const resultado = document.getElementById("resultado");
+  <script src="/static/js/verifica_mfa.js" type="module"></script>
+  <script type="module">
+    import { verificarMFA } from '/static/js/verifica_mfa.js';
 
-      const resposta = await fetch('/verifica_mfa', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ codigo })
-      });
+    document.getElementById('botaoVerificar').addEventListener('click', (event) => {
+      event.preventDefault();
+      verificarMFA();
+    });
 
-      const texto = await resposta.text();
-
-      if (texto === "true") {
-        resultado.textContent = "✅ Código verificado com sucesso!";
-        resultado.style.color = "green";
-        setTimeout(() => {
-          window.location.href = "/static/account_page.html";
-        }, 1500);
-      } else {
-        resultado.textContent = "❌ Código inválido!";
-        resultado.style.color = "red";
-      }
-    }
+    document.getElementById('formMFA').addEventListener('submit', (event) => {
+      event.preventDefault();
+      verificarMFA();
+    });
   </script>
+  
 </body>
 </html>

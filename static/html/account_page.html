@@ -5,19 +5,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/account_style.css">
+    <link rel="stylesheet" href="/static/css/account_style.css">
     <title>Conta Bancaria</title>
-    <link rel="icon" type="image/png" href="/static/dc_ls_bk_lg.png">
+    <link rel="icon" type="image/png" href="/static/logo/dc_ls_bk_lg.png">
 
 
     <header>
         <div class="container header-container">
           <div class="logo-nav">
-            <a href="index.html" class="logo-link">
-              <img src="pucsess.png" alt="PUCPR" class="logo">
+            <a href="/static/html/index.html" class="logo-link">
+              <img src="/static/img_index/pucsess.png" alt="PUCPR" class="logo">
             </a>
+            <nav class="main-nav">
+              <a href="/static/html/sobre.html">Sobre nós</a>
+              <a href="/static/html/comentarios.html">Comentários</a>
+              <a href="/static/html/newpasswd_page.html">Nova Senha</a>
+            </nav>
+          </div>
         </div>
       </header>
+      
 
 
     <div class="container">
@@ -25,12 +32,12 @@
             
             <div class="menu-section">
                 <div class="menu-title">Menu</div>
-                <a href="account_page.html" class="menu-item">
+                <a href="#" class="menu-item active">
                     <div class="menu-icon">&#128178;</div>
                     <div class="menu-text">Conta cliente</div>
                     
                 </a>
-                <a href="emprestimo_page.html" class="menu-item active">
+                <a href="emprestimo_page.html" class="menu-item">
                     <div class="menu-icon">&#128184;</div>
                     <div class="menu-text">Empréstimos</div>
                     
@@ -43,21 +50,42 @@
                 <a href="dashboard.html" class="menu-item">
                     <div class="menu-icon">&#128176;</div>
                     <div class="menu-text">Dashboard</div>
+                    
                 </a>
+               
+                
                 </a>
             </div>
         </aside>
+
         <main class="main-content">
+            
+            
+           
+
             <div class="card">
-                    <h2 class="section-title">Emprestimos disponiveis:</h2>
+                
+                    <h2 class="section-title">Resumo</h2>
+                    <button class="hide-values" onclick="ocultar()">Ocultar Valores</button>
+                
                 <div class="account-summary">
-                    <div class="account-label">Emprestimo estudante</div>
-                    <div class="account-balance" id="emprest">R$ 12.500,00</div>
-                    <button type="submit" class="loan-botao">Pegar</button>
+                    <div class="account-label">Conta corrente</div>
+                    <div class="account-balance" id="valor">*****</div>
                 </div>
             </div>
         </main>
     </div>
 </body>
-
+<script>
+    
+        const saldoReal = "R$ 100,56";
+        let visivel = false;
+    
+        function ocultar() {
+          const saldoElemento = document.getElementById("valor");
+          visivel = !visivel;
+          saldoElemento.textContent = visivel ? saldoReal : "*****";
+        }
+    
+</script>
 </html>

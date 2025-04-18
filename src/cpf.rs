@@ -1,11 +1,17 @@
 // https://github.com/andrelmlins/cpf_cnpj
 
 use rocket::{http::Status, serde::json::Json};
+
 #[derive(serde::Deserialize)]
 pub struct CpfConf {
     pub cpf: String,
 }
-  
+
+#[derive(serde::Serialize)]
+pub struct CpfResponse {
+    pub valido: bool,
+}
+
 pub fn validate(valor: &str) -> bool {
     let numbers = valor
         .chars()
@@ -13,7 +19,7 @@ pub fn validate(valor: &str) -> bool {
         .collect::<Vec<_>>();
 
     if numbers.len() != 11 || equal_digits(&numbers) {
-        return false;
+        return false; 
     }
     let digit_one = validate_first_digit(&numbers);
     if digit_one != numbers[9].to_string().parse::<usize>().unwrap() {
@@ -74,11 +80,25 @@ fn equal_digits(numbers: &Vec<char>) -> bool {
     }
     return true;
 }
+#[post("/cfCPFbk", format = "json", data = "<cpf_data>")]
+pub async fn vcpf(cpf_data: Json<CpfConf>) -> Result<Json<CpfResponse>, Status> {
+    let valido: bool = validate(&cpf_data.cpf);
+    Ok(Json(CpfResponse { valido }))
+}
+/*
+----antes estava assim sem a struct, pode ser util esse comentario no futuro, NAO TIRA ESSA MERDA DAQUI!!! ----
 
 #[post("/cfCPFbk", format = "json", data = "<cpf_data>")]
-pub async fn vcpf(cpf_data: Json<CpfConf>) -> Result<String, Status> {
+pub async fn vcpf(cpf_data: Json<CpfConf>) -> Result<Json<bool>, Status> {
     let valido: bool = validate(&cpf_data.cpf);
-    Ok(valido.to_string())
+    Ok(Json(valido))       <- encapsular para responder, antes estava como string ate o pedro taxar a gente
+}                                                                                       |  AQ EM BAIXO O EX ANTIGO Q ESTAVA EM STRING, FUNCIONAL, MAS IDIOTA 
+                                                                                        |
+                                                                                        |
+                                                                                        V
+#[post("/cfCPFbk", format = "json", data = "<cpf_data>")]
+pub async fn vcpf(cpf_data: Json<CpfConf>) -> Result<bool, Status> {
+    let valido: bool = validate(&cpf_data.cpf);
+    Ok(valido)
 }
-
-
+*/

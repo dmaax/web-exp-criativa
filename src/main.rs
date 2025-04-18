@@ -7,17 +7,16 @@ use std::path::Path;
 
 mod cpf;
 mod mail;
-mod newcodmfa;
 mod autenticador;
 
 #[get("/")]
 fn root() -> Redirect {
-    Redirect::to(uri!("/index"))
+    Redirect::to("/static/html/index.html")
 }
 
 #[get("/<file>")]
 async fn html_files(file: &str) -> Option<NamedFile> {
-    let path = format!("static/{}.html", file);
+    let path = format!("static/html/{}.html", file);
     NamedFile::open(Path::new(&path)).await.ok()
 }
 
@@ -30,6 +29,7 @@ fn rocket() -> _ {
 
     rocket::build()
         .mount("/", routes![root, html_files, mail::send_verification, cpf::vcpf, autenticador::vcod])
+
 
         .mount("/static", FileServer::from("static"))
 }

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/login_style.css">
+    <link rel="stylesheet" href="/static/css/login_style.css">
     <title>Cadastro</title>
-    <link rel="icon" type="image/png" href="/static/dc_ls_bk_lg.png">
+    <link rel="icon" type="image/png" href="/static/logo/dc_ls_bk_lg.png">
 
 </head>
 <body>
@@ -13,8 +13,8 @@
     <header>
         <div class="container header-container">
           <div class="logo-nav">
-            <a href="index.html" class="logo-link">
-              <img src="pucsess.png" alt="PUCPR" class="logo">
+            <a href="/static/html/index.html" class="logo-link">
+              <img src="/static/logo/pucsess.png" alt="PUCPR" class="logo">
               <div class="header-right"></div>
             </a>
           </div>
@@ -30,30 +30,38 @@
   
     <div class="banner">
       <div class="container">
-        <h2>Mude sua senha</h2>
+        <h2>Entre na sua conta</h2>
       </div>
     </div>
   
     <main class="main-content">
       <div class="container">
-        
+        <div class="tabs">
+          <div class="tab active" id="login-tab" >Login</div>
+          <div class="tab " id="register-tab">Cadastro</div>
+      </div>
         <div class="content-grid">
           <div class="login-section">
-            <form class="login-form">
+            <form class="login-form" onsubmit="return login(event)">
+
               <div class="form-group">
-                <label for="userId">Nova senha</label>
+                <label for="userId">User ID</label>
                 <input type="text" id="userId" name="userId">
               </div>
   
               <div class="form-group">
-                <label for="password">Confirmar nova senha</label>
+                <label for="password">Senha</label>
                 <input type="password" id="password" name="password">
-                
+                <div style="margin-top: 0.5rem;">
+                  <a href="/static/html/forgot_page.html">Esqueceu sua senha?</a>
+                </div>
               </div>
-  
-              <button type="submit" class="login-button">
-                
-                Mudar senha
+               <button type="submit" class="login-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Entrar
               </button>
             </form>
           </div>
@@ -75,9 +83,5 @@
   
 
   </body>
-  <script>
-    document.getElementById("register-tab").addEventListener("click", function() {
-        window.location.href = "/static/register_page.html"; 
-    });
-</script>
+  <script src="/static/js/login.js"></script>
   </html>
