@@ -67,7 +67,7 @@
             <img src="/static/img_login/anuncio.jpg" alt="MFA App" class="app-image">
             <div class="app-text">
               <h4>Use Google Authenticator ou Authy</h4>
-              <button class="app-button" onclick="window.location.href='https://www.pucpr.br/'">
+              <button class="app-button" onclick="window.location.href='https://pucpr.br'">
                 Saiba mais sobre segurança
               </button>
             </div>
@@ -81,13 +81,11 @@
   <script type="module">
     import { verificarMFA } from '/static/verifica_mfa.js';
 
-    // Vincula a função de verificação ao botão de verificação
     document.getElementById('botaoVerificar').addEventListener('click', (event) => {
       event.preventDefault();
       verificarMFA();
     });
 
-    // Também vincula a função ao envio do formulário
     document.getElementById('formMFA').addEventListener('submit', (event) => {
       event.preventDefault();
       verificarMFA();
