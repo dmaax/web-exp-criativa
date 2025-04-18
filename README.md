@@ -6,8 +6,7 @@
 
 ## Rodando
 
-```sudo apt install libssl-dev``` <br>
-```sudo apt install pkg-config``` <br>
-```sudo apt install gcc``` <br>
+```sudo apt update``` <br>
+```sudo apt install pkg-config libssl-dev gcc ``` <br>
 ```cargo run```
 
