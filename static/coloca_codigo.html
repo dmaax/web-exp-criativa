@@ -43,13 +43,13 @@
       <div class="content-grid">
       
         <div class="login-section">
-          <form class="login-form" onsubmit="event.preventDefault(); verificarMFA();">
+          <form class="login-form" id="formMFA">
             <div class="form-group">
               <label for="codigoMFA">Código MFA</label>
               <input type="text" id="codigoMFA" name="codigoMFA" placeholder="Ex: 123456">
             </div>
 
-            <button type="submit" class="login-button">
+            <button type="button" class="login-button" id="botaoVerificar">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -77,32 +77,22 @@
     </div>
   </main>
 
-  <script>
-    async function verificarMFA() {
-      const codigo = document.getElementById("codigoMFA").value;
-      const resultado = document.getElementById("resultado");
+  <script src="/static/verifica_mfa.js" type="module"></script>
+  <script type="module">
+    import { verificarMFA } from '/static/verifica_mfa.js';
 
-      const resposta = await fetch('/verifica_mfa', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ codigo })
-      });
+    // Vincula a função de verificação ao botão de verificação
+    document.getElementById('botaoVerificar').addEventListener('click', (event) => {
+      event.preventDefault();
+      verificarMFA();
+    });
 
-      const texto = await resposta.text();
-
-      if (texto === "true") {
-        resultado.textContent = "✅ Código verificado com sucesso!";
-        resultado.style.color = "green";
-        setTimeout(() => {
-          window.location.href = "/static/account_page.html";
-        }, 1500);
-      } else {
-        resultado.textContent = "❌ Código inválido!";
-        resultado.style.color = "red";
-      }
-    }
+    // Também vincula a função ao envio do formulário
+    document.getElementById('formMFA').addEventListener('submit', (event) => {
+      event.preventDefault();
+      verificarMFA();
+    });
   </script>
+  
 </body>
 </html>
