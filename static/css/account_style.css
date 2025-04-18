@@ -162,3 +162,63 @@ header {
 .loan-botao:hover{
     background-color: rgb(1, 145, 1);
 }
+.nova-senha-link {
+    margin-left: 20px;
+    font-size: 16px;
+    text-decoration: none;
+    color: #0056b3;
+    font-weight: bold;
+    transition: color 0.2s;
+  }
+  
+  .nova-senha-link:hover {
+    color: #003f7f;
+  }
+  
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+  }
+  
+  .logo-nav {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo {
+    height: 50px;
+    margin-right: 20px;
+  }
+  
+  .main-nav {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .main-nav a {
+    text-decoration: none;
+    color: #ffffff; 
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+  
+  .main-nav a:hover {
+    color: #ffffff; 
+  }
+  
+  .btn.btn-primary {
+    background-color: #eeeeee;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  .btn.btn-primary:hover {
+    background-color: #0056b3;
+  }
+  
