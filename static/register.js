@@ -19,18 +19,26 @@ function verificacpfbasico(c) {
     return true;
 }
 
-async function verificacpfbkend(c2) {
-    const response = await fetch('/cfCPFbk', {
+function verificacpfbkend(c2) {
+    return fetch('/cfCPFbk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cpf: c2 })
-    });
-    const data = await response.text();
-    if (data === "true") {
-        return true;
-    } else {
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Erro na requisição');
+        }
+    })
+    .then(data => {
+        return data.valido;
+    })
+    .catch(error => {
+        console.error('Erro ao verificar CPF:', error);
         return false;
-    }
+    });
 }
 
 function verificaidade(i) {

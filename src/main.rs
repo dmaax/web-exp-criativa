@@ -7,7 +7,6 @@ use std::path::Path;
 
 mod cpf;
 mod mail;
-mod newcodmfa;
 mod autenticador;
 
 #[get("/")]

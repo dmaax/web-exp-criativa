@@ -3,6 +3,17 @@ use rocket::http::Status;
 use std::env;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
+use rand::Rng;
+use koibumi_base32::encode;
+
+// gera codigo
+#[allow(dead_code)]
+pub fn gerar_segredo() -> String {
+    let mut rng = rand::thread_rng();
+    let bytes: [u8; 16] = rng.r#gen();
+    encode(&bytes)
+}
+
 //use rand::{distributions::Alphanumeric, Rng};
 
 //use crate::newcodmfa; dx isso aq 
@@ -10,8 +21,8 @@ use lettre::{Message, SmtpTransport, Transport};
 
 #[derive(serde::Deserialize)]
 pub struct EmailRequest {
-    email: String,
-    nome : String,
+    email: Box<str>,
+    nome : Box<str>,
 }
 
 /* 
@@ -25,6 +36,7 @@ fn generate_token() -> String {
 */
 #[post("/send_verification", format = "json", data = "<request>")]
 pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static str, Status> {
+    
     let email_address = request.email.trim();
     let nome_pessoa: &str = request.nome.trim();
     if !email_address.contains('@') {
@@ -40,13 +52,15 @@ pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static s
     // futuramente add essa linha, agora vai ficar uma "senha" fixa para mostrar na primiera sprint
     let codigo_autenticador_usr: &str = "ea273b66in5pvp64sg2gigpwuu";
 
-
+    let msg: String = format!("Ola {}\nPara voce ter acesso a sua conta futuramente, 
+    adicione esse codigo em seu aplicativo de autenticador: {}\nClique no link para verificar seu email: {}", 
+    nome_pessoa, codigo_autenticador_usr, verification_url).into();
+    
     let email = Message::builder()
         .from("PUCBank <no-reply@labcyber.xyz>".parse().unwrap())
         .to(email_address.parse().unwrap())
         .subject("Verifique Seu Email")
-        .body(format!("Ola {}\nPara voce ter acesso a sua conta futuramente, adicione esse codigo em seu aplicativo de autenticador: {}
-        \nClique no link para verificar seu email: {}", nome_pessoa, codigo_autenticador_usr, verification_url))
+        .body(msg)
         .unwrap();
 
     let smtp_user = env::var("SMTP_USER").expect("SMTP_USER not set");
