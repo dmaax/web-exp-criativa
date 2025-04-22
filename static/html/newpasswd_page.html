@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="/static/css/login_style.css">
     <title>Cadastro</title>
     <link rel="icon" type="image/png" href="/static/logo/dc_ls_bk_lg.png">
-
 </head>
 <body>
   
@@ -51,8 +50,7 @@
                 
               </div>
   
-              <button type="submit" class="login-button">
-                
+              <button type="button" class="login-button" onclick="window.location.href='/static/html/login_page.html';">
                 Mudar senha
               </button>
             </form>
@@ -73,11 +71,10 @@
       </div>
     </main>
   
-
-  </body>
-  <script>
-    document.getElementById("register-tab").addEventListener("click", function() {
-        window.location.href = "/static/html/register_page.html"; 
-    });
+</body>
+<script>
+  document.getElementById("register-tab").addEventListener("click", function() {
+      window.location.href = "/static/html/register_page.html"; 
+  });
 </script>
-  </html>
+</html>

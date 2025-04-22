@@ -13,14 +13,13 @@ function verificaemail(e) {
 
 function verificacpfbasico(c) {
     if (c.length !== 11) {
-        window.alert("Erro 1 em CPF.");
         return false;
     }
     return true;
 }
 
 function verificacpfbkend(c2) {
-    return fetch('/cfCPFbk', {
+    return fetch('/verifica_cpf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cpf: c2 })
@@ -36,7 +35,6 @@ function verificacpfbkend(c2) {
         return data.valido;
     })
     .catch(error => {
-        console.error('Erro ao verificar CPF:', error);
         return false;
     });
 }
@@ -57,7 +55,6 @@ function verificaidade(i) {
     if (idade >= 18) {
         return true;
     } else {
-        window.alert("Você deve ter pelo menos 18 anos para se cadastrar.");
         return false;
     }
 }
@@ -83,7 +80,6 @@ function resultadosenha(s1, s2) {
 function resultadotelefone(telefone) {
     const regexTelefone = /^\d{10,11}$/;
     if (!regexTelefone.test(telefone)) {
-        alert("Telefone inválido. Deve conter 10 ou 11 dígitos numéricos.");
         return false;
     }
     return true;
@@ -92,12 +88,19 @@ function resultadotelefone(telefone) {
 function resultadocep(cp) {
     const regexCEP = /^\d{5}-?\d{3}$/;
     if (!regexCEP.test(cp)) {
-        alert("CEP inválido. Formato esperado: 00000000.");
         return false;
     }
     return true;
 }
 
+function marcarCampoInvalido(idCampo, invalido) {
+    const campo = document.getElementById(idCampo);
+    if (invalido) {
+        campo.classList.add("campo-invalido");
+    } else {
+        campo.classList.remove("campo-invalido");
+    }
+}
 
 
 
@@ -143,15 +146,28 @@ async function validarCadastro() {
     console.log("resultadotelefoneok:", resultadotelefoneok);
     console.log("resultadocepok:", resultadocepok);
 
+    marcarCampoInvalido("iemail", !resultadoemail);
+    marcarCampoInvalido("icpf", !(resultadocpfbasico && resultadocpfbkend));
+    marcarCampoInvalido("ibirthdate", !resultadoidade);
+    marcarCampoInvalido("password", !resultadosenhaok);
+    marcarCampoInvalido("confirmPassword", !resultadosenhaok);
+    marcarCampoInvalido("icellphone", !resultadotelefoneok);
+    marcarCampoInvalido("icep", !resultadocepok);
+
 
     if (resultadocpfbasico &&resultadoemail && resultadocpfbkend && resultadoidade &&resultadosenhaok && resultadotelefoneok && resultadocepok) {
-        window.alert("Email enviado para confirmar conta");
     
         fetch("/send_verification", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: email, nome: nome }),
         })
+        window.alert("Email enviado para confirmar conta");
+
+        setTimeout(() => {
+            window.location.href = "/static/html/login_page.html";
+        }, 3000);
+
     }
 }
 

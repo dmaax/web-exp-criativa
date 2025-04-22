@@ -307,3 +307,8 @@ input[type="date"] {
     border: 2px solid red;
     background-color: #ffe5e5;
 }
+
+.campo-invalido {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+}

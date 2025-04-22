@@ -1,6 +1,4 @@
-</head>
-<body>
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -8,50 +6,51 @@
     <link rel="stylesheet" href="/static/css/account_style.css">
     <title>Conta Bancaria</title>
     <link rel="icon" type="image/png" href="/static/logo/dc_ls_bk_lg.png">
-
-
+</head>
+<body>
     <header>
         <div class="container header-container">
-          <div class="logo-nav">
-            <a href="/static/html/index.html" class="logo-link">
-              <img src="/static/logo/pucsess.png" alt="PUCPR" class="logo">
-            </a>
+            <div class="logo-nav">
+                <a href="/static/html/index.html" class="logo-link">
+                    <img src="/static/logo/pucsess.png" alt="PUCPR" class="logo">
+                </a>
+                <nav class="main-nav">
+                    <a href="/static/html/sobre.html">Sobre nós</a>
+                    <a href="/static/html/comentarios.html">Comentários</a>
+                    <a href="/static/html/newpasswd_page.html">Nova Senha</a>
+                </nav>
+            </div>
         </div>
-      </header>
-
+    </header>
 
     <div class="container">
         <aside class="sidebar">
-            
             <div class="menu-section">
                 <div class="menu-title">Menu</div>
                 <a href="/static/html/account_page.html" class="menu-item">
                     <div class="menu-icon">&#128178;</div>
                     <div class="menu-text">Conta cliente</div>
-                    
                 </a>
                 <a href="/static/html/emprestimo_page.html" class="menu-item active">
                     <div class="menu-icon">&#128184;</div>
                     <div class="menu-text">Empréstimos</div>
-                    
                 </a>
                 <a href="/static/html/card_page.html" class="menu-item">
                     <div class="menu-icon">&#128179;</div>
                     <div class="menu-text">Cartões</div>
-                    
                 </a>
                 <a href="/static/html/dashboard.html" class="menu-item">
                     <div class="menu-icon">&#128176;</div>
                     <div class="menu-text">Dashboard</div>
                 </a>
-                </a>
             </div>
         </aside>
+
         <main class="main-content">
             <div class="card">
-                    <h2 class="section-title">Emprestimos disponiveis:</h2>
+                <h2 class="section-title">Empréstimos disponíveis:</h2>
                 <div class="account-summary">
-                    <div class="account-label">Emprestimo estudante</div>
+                    <div class="account-label">Empréstimo estudante</div>
                     <div class="account-balance" id="emprest">R$ 12.500,00</div>
                     <button type="submit" class="loan-botao">Pegar</button>
                 </div>
@@ -59,5 +58,4 @@
         </main>
     </div>
 </body>
-
 </html>
