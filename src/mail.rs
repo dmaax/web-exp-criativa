@@ -65,6 +65,6 @@ pub fn send_verification(email:String ,nome:String) {
         .build();
 
 
-    mailer.send(&email);
+    let _ = mailer.send(&email);
 
 }
