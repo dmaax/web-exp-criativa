@@ -1,5 +1,3 @@
-use rocket::serde::json::Json;
-use rocket::http::Status;
 use std::env;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
@@ -34,14 +32,8 @@ fn generate_token() -> String {
         .collect()
 }
 */
-#[post("/send_verification", format = "json", data = "<request>")]
-pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static str, Status> {
-    
-    let email_address:&str = request.email.trim();
-    let nome_pessoa: &str = request.nome.trim();
-    if !email_address.contains('@') {
-        return Err(Status::BadRequest);
-    }
+
+pub fn send_verification(email:String ,nome:String) {
     
     //let token = generate_token();
     //let verification_url = format!("https://bank.labcyber.xyz/verify?token={}", token);
@@ -54,11 +46,11 @@ pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static s
 
     let msg: String = format!("Ola {}\nPara voce ter acesso a sua conta futuramente, 
     adicione esse codigo em seu aplicativo de autenticador: {}\nClique no link para verificar seu email: {}", 
-    nome_pessoa, codigo_autenticador_usr, verification_url).into();
+    nome, codigo_autenticador_usr, verification_url);
     
     let email = Message::builder()
         .from("PUCBank <no-reply@labcyber.xyz>".parse().unwrap())
-        .to(email_address.parse().unwrap())
+        .to(email.parse().unwrap())
         .subject("Verifique Seu Email")
         .body(msg)
         .unwrap();
@@ -72,8 +64,7 @@ pub async fn send_verification(request: Json<EmailRequest>) -> Result<&'static s
         .credentials(creds)
         .build();
 
-    match mailer.send(&email) {
-        Ok(_) => Ok("Email Enviado!"),
-        Err(_) => Err(Status::InternalServerError),
-    }
+
+    mailer.send(&email);
+
 }

@@ -8,6 +8,7 @@ use std::path::Path;
 mod cpf;
 mod mail;
 mod autenticador;
+mod login_db;
 
 #[get("/")]
 fn root() -> Redirect {
@@ -28,7 +29,7 @@ fn rocket() -> _ {
     let _smtp_password: Box<str> = env::var("SMTP_PASSWORD").expect("SMTP_PASSWORD não configurado").into();
 
     rocket::build()
-        .mount("/", routes![root, html_files, mail::send_verification, cpf::vcpf, autenticador::vcod])
+        .mount("/", routes![root, html_files, cpf::vcpf, autenticador::vcod])
 
 
         .mount("/static", FileServer::from("static"))
