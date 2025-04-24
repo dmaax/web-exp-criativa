@@ -5,10 +5,14 @@ use rocket::fs::{FileServer, NamedFile};
 use std::env;
 use std::path::Path;
 
+
 mod cpf;
 mod mail;
 mod autenticador;
 mod login_db;
+mod princiapl;
+mod models;
+mod schema;
 
 #[get("/")]
 fn root() -> Redirect {
@@ -29,7 +33,7 @@ fn rocket() -> _ {
     let _smtp_password: Box<str> = env::var("SMTP_PASSWORD").expect("SMTP_PASSWORD não configurado").into();
 
     rocket::build()
-        .mount("/", routes![root, html_files, cpf::vcpf, autenticador::vcod])
+        .mount("/", routes![root, html_files, cpf::vcpf, autenticador::vcod, princiapl::criar_conta,])
 
 
         .mount("/static", FileServer::from("static"))

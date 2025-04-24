@@ -61,19 +61,19 @@ function verificaidade(i) {
 
 function resultadosenha(s1, s2) {
     if (s1 !== s2) {
-        return false;
+        return { valido: false, hash: null };
     }
 
     const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
 
     if (regex.test(s1)) {
-        hashFinal = CryptoJS.SHA256(s1).toString(CryptoJS.enc.Hex);
-        console.log("Hash da senha:", hashFinal);
-        return true;
+        const hash = CryptoJS.SHA256(s1).toString(CryptoJS.enc.Hex);
+        return { valido: true, hash: hash };
     } else {
-        return false;
+        return { valido: false, hash: null };
     }
 }
+
 
 
 function resultadotelefone(telefone) {
@@ -122,7 +122,6 @@ async function validarCadastro() {
     let resultadocpfbasico = verificacpfbasico(cpf.toString());
     let resultadocpfbkend = false;
 
-    let hashFinal = "";
 
     if (resultadocpfbasico) {
         try {
@@ -134,7 +133,10 @@ async function validarCadastro() {
     }
 
     let resultadoidade = verificaidade(dataNascimento);
-    let resultadosenhaok = resultadosenha(senha, confirmarSenha);
+    let senhaResultado = resultadosenha(senha, confirmarSenha);
+    let resultadosenhaok = senhaResultado.valido;
+    let hashFinal = senhaResultado.hash;
+
     let resultadotelefoneok = resultadotelefone(telefone);
     let resultadocepok = resultadocep(cep);
 
@@ -182,7 +184,9 @@ async function validarCadastro() {
         .then(resultado => {
             switch (resultado) {
                 case 1:
-                    window.location.href = "/static/html/login_page.html";
+                    setTimeout(() => {
+                        window.location.href = "/static/html/login_page.html";
+                    }, 3000);
                     break;
                 case 2:
                     alert("Conta já existe com este email ou CPF.");

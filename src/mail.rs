@@ -4,8 +4,7 @@ use lettre::{Message, SmtpTransport, Transport};
 use rand::Rng;
 use koibumi_base32::encode;
 
-// gera codigo
-#[allow(dead_code)]
+// gera codig
 pub fn gerar_segredo() -> String {
     let mut rng = rand::thread_rng();
     let bytes: [u8; 16] = rng.r#gen();
@@ -13,16 +12,6 @@ pub fn gerar_segredo() -> String {
 }
 
 //use rand::{distributions::Alphanumeric, Rng};
-
-//use crate::newcodmfa; dx isso aq 
-
-
-#[derive(serde::Deserialize)]
-pub struct EmailRequest {
-    email: Box<str>,
-    nome : Box<str>,
-}
-
 /* 
 fn generate_token() -> String {
     rand::thread_rng()

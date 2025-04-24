@@ -48,6 +48,11 @@ GRANT SELECT, UPDATE ON usuarios TO editor_app;
 
 REVOKE DELETE ON usuarios FROM PUBLIC;
 
+GRANT ALL ON SCHEMA public TO escritor_app;
+ALTER SCHEMA public OWNER TO escritor_app;
+
+SELECT * FROM usuarios; -> ver os usuarios
+
 __________________________________________________________________________________________________________________________________________________________________
 EXPLICACAO ( chat gpt )
 
@@ -111,7 +116,25 @@ depois gera o diesel.toml
 
 diesel setup
 
-depois gerar a pasta migration ( a gente ja criou entao depende do caso, como estamos usando outro banco n precisa desse)
+depois gerar a pasta migration
+mkdir migrations
 
 diesel migration generate criar_usuarios 
 
+
+
+
+no up coloca isso 
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    cpf VARCHAR(12) NOT NULL UNIQUE,
+    data_nascimento VARCHAR(10) NOT NULL,
+    telefone VARCHAR(16) NOT NULL,
+    senha_hash TEXT NOT NULL,
+    cep VARCHAR(9) NOT NULL,
+    codigo_2fa VARCHAR(32) NOT NULL
+);
+
+diesel migration run
