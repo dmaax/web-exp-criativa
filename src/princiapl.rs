@@ -4,7 +4,7 @@ use crate::models::Usuario;
 use crate::schema::usuarios::dsl::*;
 use diesel::prelude::*;
 use crate::login_db::conectar_escritor;
-use crate::mail::send_verification;
+use crate::mail::{self, send_verification};
 
 
 #[derive(Debug, Deserialize)]
@@ -20,7 +20,7 @@ pub struct NovoUsuario {
 }
 
 #[post("/entrada_criar_conta", format = "json", data = "<dados>")]
-pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<i32> {
+pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<u8> {
     let mut conn = conectar_escritor(); 
 
     // Verifica se o usuário já existe no banco de dados (por CPF ou e-mail)
@@ -33,8 +33,7 @@ pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<i32> {
     match resultado {
         Ok(Some(_)) => return Json(2),
         Ok(None) => {
-            // Gera código 2FA fixo ou com lib de 2FA
-            let cod_2fa = "ea273b66in5pvp64sg2gigpwuu";
+            let cod_2fa: String = mail::gerar_segredo(); // Gera o código 2FA
 
             // Criação do novo usuário no banco
             let novo_usuario = (
@@ -45,7 +44,7 @@ pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<i32> {
                 telefone.eq(&dados.telefone),
                 cep.eq(&dados.cep),
                 senha_hash.eq(&dados.senha),
-                codigo_2fa.eq(cod_2fa),
+                codigo_2fa.eq(&cod_2fa),
             );
 
             // Insere o novo usuário no banco de dados
@@ -56,7 +55,7 @@ pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<i32> {
             match resultado_insercao {
                 Ok(_) => {
                     // Envia o e-mail de verificação
-                    send_verification(dados.email.clone(), dados.nome.clone());
+                    send_verification(&dados.email, &dados.nome, &cod_2fa);
 
                     Json(1)
                 },

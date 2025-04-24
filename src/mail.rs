@@ -22,7 +22,7 @@ fn generate_token() -> String {
 }
 */
 
-pub fn send_verification(email:String ,nome:String) {
+pub fn send_verification(email:&String ,nome:&String, codigo_autenticador_usr:&String) {
     
     //let token = generate_token();
     //let verification_url = format!("https://bank.labcyber.xyz/verify?token={}", token);
@@ -31,7 +31,6 @@ pub fn send_verification(email:String ,nome:String) {
 
     //let codigo_autenticador_usr: String = newcodmfa::gerar_segredo();
     // futuramente add essa linha, agora vai ficar uma "senha" fixa para mostrar na primiera sprint
-    let codigo_autenticador_usr: &str = "ea273b66in5pvp64sg2gigpwuu";
 
     let msg: String = format!("Ola {}\nPara voce ter acesso a sua conta futuramente, 
     adicione esse codigo em seu aplicativo de autenticador: {}\nClique no link para verificar seu email: {}", 
