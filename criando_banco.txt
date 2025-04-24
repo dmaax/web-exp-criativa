@@ -1,0 +1,5 @@
+doc desse negocio -> https://www.postgresql.org/docs/current/
+
+criacao -> https://www.postgresql.org/docs/current/tutorial-createdb.html
+
+no .env -> DATABASE_URL=postgres://app_user:senha123@localhost/meubanco
