@@ -9,7 +9,7 @@ pub fn conectar_root() -> PgConnection {
     PgConnection::establish(&database_url).expect(&format!("Falha ao conectar a {}", database_url))
 }
 
-pub fn conectar_escritor() -> PgConnection {
+pub fn conectar_escritor_leitor() -> PgConnection { // e leitor
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL_ESCRITOR não configurado");
     PgConnection::establish(&database_url).expect(&format!("Falha ao conectar a {}", database_url))

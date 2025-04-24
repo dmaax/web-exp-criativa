@@ -3,7 +3,7 @@ use rocket::post;
 use crate::models::Usuario;
 use crate::schema::usuarios::dsl::*;
 use diesel::prelude::*;
-use crate::login_db::conectar_escritor;
+use crate::login_db::conectar_escritor_leitor;
 use crate::mail::{self, send_verification};
 
 
@@ -21,7 +21,7 @@ pub struct NovoUsuario {
 
 #[post("/entrada_criar_conta", format = "json", data = "<dados>")]
 pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<u8> {
-    let mut conn = conectar_escritor(); 
+    let mut conn = conectar_escritor_leitor(); 
 
     // Verifica se o usuário já existe no banco de dados (por CPF ou e-mail)
     let resultado = usuarios
