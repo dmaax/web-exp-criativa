@@ -67,9 +67,8 @@ function resultadosenha(s1, s2) {
     const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
 
     if (regex.test(s1)) {
-        const senha = document.getElementById("password").value;
-        const hash = CryptoJS.SHA256(senha).toString(CryptoJS.enc.Hex);
-        console.log("Hash da senha:", hash);
+        hashFinal = CryptoJS.SHA256(s1).toString(CryptoJS.enc.Hex);
+        console.log("Hash da senha:", hashFinal);
         return true;
     } else {
         return false;
@@ -123,6 +122,8 @@ async function validarCadastro() {
     let resultadocpfbasico = verificacpfbasico(cpf.toString());
     let resultadocpfbkend = false;
 
+    let hashFinal = "";
+
     if (resultadocpfbasico) {
         try {
             resultadocpfbkend = await verificacpfbkend(cpf.toString());
@@ -155,21 +156,52 @@ async function validarCadastro() {
     marcarCampoInvalido("icep", !resultadocepok);
 
 
-    if (resultadocpfbasico &&resultadoemail && resultadocpfbkend && resultadoidade &&resultadosenhaok && resultadotelefoneok && resultadocepok) {
-    
-        fetch("/send_verification", {
+    if (
+        resultadocpfbasico &&
+        resultadoemail &&
+        resultadocpfbkend &&
+        resultadoidade &&
+        resultadosenhaok &&
+        resultadotelefoneok &&
+        resultadocepok
+    ) {
+        fetch("/entrada_criar_conta", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: email, nome: nome }),
+            body: JSON.stringify({
+                email: email,
+                nome: nome,
+                cpf: cpf,
+                dataNascimento: dataNascimento,
+                telefone: telefone,
+                cep: cep,
+                senha: hashFinal
+            }),
         })
-        window.alert("Email enviado para confirmar conta");
-
-        setTimeout(() => {
-            window.location.href = "/static/html/login_page.html";
-        }, 3000);
-
+        .then(response => response.json())
+        .then(resultado => {
+            switch (resultado) {
+                case 1:
+                    window.location.href = "/static/html/login_page.html";
+                    break;
+                case 2:
+                    alert("Conta já existe com este email ou CPF.");
+                    break;
+                case 3:
+                    alert("Erro ao criar conta. Tente novamente mais tarde.");
+                    break;
+                default:
+                    alert("Erro inesperado.");
+            }
+        })
+        .catch(error => {
+            console.error("Erro na requisição:", error);
+            alert("Erro ao conectar com o servidor.");
+        });
     }
 }
+
+
 
 
 
