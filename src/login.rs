@@ -1,7 +1,6 @@
 use rocket::serde::{Deserialize, json::Json};
 use rocket::post;
 use diesel::prelude::*;
-use bcrypt::verify; // Certifique-se de que a dependência bcrypt está no Cargo.toml
 use crate::schema::usuarios::dsl::*;
 use crate::login_db::conectar_escritor_leitor;
 use crate::models::Usuario;

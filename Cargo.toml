@@ -13,5 +13,4 @@ dotenv = "0.15"
 koibumi-base32 = "0.0.3"
 totp-lite = "2.0.1"
 diesel = { version = "2.2.9" , features = ["postgres"] }
-bcrypt = "0.17.0"
 
