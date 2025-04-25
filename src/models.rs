@@ -10,7 +10,7 @@ pub struct Usuario {
     pub cpf: String,
     pub data_nascimento: String,
     pub telefone: String,
-    pub cep: String,
     pub senha_hash: String,
+    pub cep: String,
     pub codigo_2fa: String,
 }

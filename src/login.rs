@@ -23,10 +23,10 @@ pub fn verificar_login(credenciais: Json<CredenciaisLogin>) -> Json<bool> {
 
     match resultado {
         Ok(Some(usuario)) => {
-            println!("Senha hash no banco: {}", usuario.cep);
+            println!("Senha hash no banco: {}", usuario.senha_hash);
             println!("Senha fornecida: {}", credenciais.senha);
 
-            if credenciais.senha == usuario.cep {
+            if credenciais.senha == usuario.senha_hash {
                 Json(true)
             } else {
                 eprintln!("Erro: As senhas não coincidem.");
