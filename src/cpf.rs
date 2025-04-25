@@ -80,6 +80,7 @@ fn equal_digits(numbers: &Vec<char>) -> bool {
     }
     return true;
 }
+// simples, recebe o cpf e devolve se é valido ou nao
 #[post("/verifica_cpf", format = "json", data = "<cpf_data>")]
 pub async fn vcpf(cpf_data: Json<CpfConf>) -> Result<Json<CpfResponse>, Status> {
     let valido: bool = validate(&cpf_data.cpf);

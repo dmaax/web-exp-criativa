@@ -4,7 +4,7 @@ use lettre::{Message, SmtpTransport, Transport};
 use rand::Rng;
 use koibumi_base32::encode;
 
-// gera codig
+// gera codigo, aquele codigo add ele no bc e manda para o usuario
 pub fn gerar_segredo() -> String {
     let mut rng = rand::thread_rng();
     let bytes: [u8; 16] = rng.r#gen();

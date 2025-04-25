@@ -22,20 +22,19 @@ pub struct NovoUsuario {
 #[post("/entrada_criar_conta", format = "json", data = "<dados>")]
 pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<u8> {
     let mut conn = conectar_escritor_leitor(); 
-
-    // Verifica se o usuário já existe no banco de dados (por CPF ou e-mail)
+    // procura se o cpf e o email ja estao cadastrados 
     let resultado = usuarios
         .filter(cpf.eq(&dados.cpf))
         .or_filter(email.eq(&dados.email))
         .first::<Usuario>(&mut conn)
         .optional();
-
+    
     match resultado {
         Ok(Some(_)) => return Json(2),
         Ok(None) => {
             let cod_2fa: String = mail::gerar_segredo(); // Gera o código 2FA
 
-            // Criação do novo usuário no banco
+            // cria o novo usuario
             let novo_usuario = (
                 nome.eq(&dados.nome),
                 email.eq(&dados.email),
@@ -47,14 +46,14 @@ pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<u8> {
                 codigo_2fa.eq(&cod_2fa),
             );
 
-            // Insere o novo usuário no banco de dados
+            // insere o novo usuário no banco de dados
             let resultado_insercao = diesel::insert_into(usuarios)
                 .values(novo_usuario)
                 .execute(&mut conn);
 
             match resultado_insercao {
                 Ok(_) => {
-                    // Envia o e-mail de verificação
+                    // envia o e-mail de verificação
                     send_verification(&dados.email, &dados.nome, &cod_2fa);
 
                     Json(1)

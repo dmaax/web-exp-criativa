@@ -11,7 +11,7 @@ pub struct CredenciaisLogin {
     pub email: String,
     pub senha: String,
 }
-
+// aq ele verifica se o ser existe no banco 
 #[post("/login", format = "json", data = "<credenciais>")]
 pub fn verificar_login(credenciais: Json<CredenciaisLogin>) -> Json<bool> {
     let mut conn = conectar_escritor_leitor();
