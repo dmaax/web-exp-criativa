@@ -11,6 +11,8 @@ function login(event) {
 
   const senhaHash = CryptoJS.SHA256(senha).toString(CryptoJS.enc.Hex);
 
+  console.log("Hash:", senhaHash);
+
   fetch("/login", {
     method: "POST",
     headers: {
@@ -25,14 +27,14 @@ function login(event) {
         throw new Error("Erro na autenticação");
       }
     })
-    .then((data) => {
-      if (data.success) {
+    .then((success) => {
+      if (success) {
         window.location.href = "/static/html/coloca_codigo.html";
       } else {
         alert("Usuário ou senha incorretos");
       }
-    }
-    )
+    })
+    
     .catch((error) => {
       console.error("Erro:", error);
       alert("Erro na autenticação");

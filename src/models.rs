@@ -1,6 +1,8 @@
 use diesel::prelude::*;
+use crate::schema::usuarios;
 
-#[derive(Queryable)]
+#[derive(Queryable, Selectable)]
+#[diesel(table_name = usuarios)]
 pub struct Usuario {
     pub id: i32,
     pub nome: String,

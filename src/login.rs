@@ -1,6 +1,7 @@
 use rocket::serde::{Deserialize, json::Json};
 use rocket::post;
 use diesel::prelude::*;
+use bcrypt::verify; // Certifique-se de que a dependência bcrypt está no Cargo.toml
 use crate::schema::usuarios::dsl::*;
 use crate::login_db::conectar_escritor_leitor;
 use crate::models::Usuario;
@@ -13,10 +14,9 @@ pub struct CredenciaisLogin {
 }
 
 #[post("/login", format = "json", data = "<credenciais>")]
-pub fn verificar_login(credenciais: Json<CredenciaisLogin>) -> Option<Json<String>> {
+pub fn verificar_login(credenciais: Json<CredenciaisLogin>) -> Json<bool> {
     let mut conn = conectar_escritor_leitor();
 
-    // Procura usuário pelo e-mail
     let resultado = usuarios
         .filter(email.eq(&credenciais.email))
         .first::<Usuario>(&mut conn)
@@ -24,13 +24,16 @@ pub fn verificar_login(credenciais: Json<CredenciaisLogin>) -> Option<Json<Strin
 
     match resultado {
         Ok(Some(usuario)) => {
-            if usuario.senha_hash == credenciais.senha {
-                let codigo_mfa = usuario.codigo_2fa.clone(); 
-                Some(Json(codigo_mfa))
+            println!("Senha hash no banco: {}", usuario.cep);
+            println!("Senha fornecida: {}", credenciais.senha);
+
+            if credenciais.senha == usuario.cep {
+                Json(true)
             } else {
-                None
+                eprintln!("Erro: As senhas não coincidem.");
+                Json(false)
             }
         },
-        _ => None,
+        _ => Json(false),
     }
 }
