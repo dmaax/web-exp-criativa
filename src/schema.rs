@@ -20,3 +20,14 @@ diesel::table! {
         codigo_2fa -> Varchar,
     }
 }
+/*
+serve para garantir a tipagem entre o banco de dados e o nosso codigo Rust
+tb permite o sql para rust 
+e o rust para sql
+
+resumindo ( chatgpt )
+
+schema.rs	Representa a estrutura das tabelas do banco (tabela, colunas, tipos).
+models.rs	Representa os dados em structs Rust para consultas/insert/update.
+
+*/

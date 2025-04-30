@@ -15,3 +15,5 @@ pub struct Usuario {
     pub cep: String,
     pub codigo_2fa: String,
 }
+// a gente precisa disso para o diesel saber como vai fazer a inserção no banco de dados, como sao os dados
+// dai o dielsel vai saber como converter codigo rust para sql dieetamente
