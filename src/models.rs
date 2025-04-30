@@ -3,6 +3,7 @@ use crate::schema::usuarios;
 
 #[derive(Queryable, Selectable)]
 #[diesel(table_name = usuarios)]
+#[allow(dead_code)]
 pub struct Usuario {
     pub id: i32,
     pub nome: String,

@@ -12,8 +12,10 @@ pub struct CredenciaisLogin {
     pub senha: String,
 }
 // aq ele verifica se o ser existe no banco 
+use rocket::http::{Cookie, CookieJar};
+
 #[post("/login", format = "json", data = "<credenciais>")]
-pub fn verificar_login(credenciais: Json<CredenciaisLogin>) -> Json<bool> {
+pub fn verificar_login(credenciais: Json<CredenciaisLogin>, cookies: &CookieJar<'_>) -> Json<bool> {
     let mut conn = conectar_escritor_leitor();
 
     let resultado = usuarios
@@ -24,6 +26,8 @@ pub fn verificar_login(credenciais: Json<CredenciaisLogin>) -> Json<bool> {
     match resultado {
         Ok(Some(usuario)) => {
             if credenciais.senha == usuario.senha_hash {
+                // Adiciona o cookie com o ID do usuario
+                cookies.add(Cookie::new("user_id", usuario.id.to_string()));
                 Json(true)
             } else {
                 Json(false)

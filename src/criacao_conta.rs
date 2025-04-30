@@ -6,9 +6,10 @@ use diesel::prelude::*;
 use crate::login_db::conectar_escritor_leitor;
 use crate::mail::{self, send_verification};
 
-
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
+#[allow(non_snake_case)]
 pub struct NovoUsuario {
     pub nome: String,
     pub email: String,
