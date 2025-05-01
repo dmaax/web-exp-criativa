@@ -10,3 +10,9 @@ CREATE TABLE usuarios (
     cep VARCHAR(9) NOT NULL,
     codigo_2fa VARCHAR(32) NOT NULL
 );
+
+GRANT SELECT, INSERT ON usuarios TO escritor_app;
+
+GRANT SELECT, UPDATE ON usuarios TO editor_app;
+
+REVOKE DELETE ON usuarios FROM PUBLIC;

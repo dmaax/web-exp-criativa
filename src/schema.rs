@@ -20,6 +20,7 @@ diesel::table! {
         codigo_2fa -> Varchar,
     }
 }
+
 /*
 serve para garantir a tipagem entre o banco de dados e o nosso codigo Rust
 tb permite o sql para rust 

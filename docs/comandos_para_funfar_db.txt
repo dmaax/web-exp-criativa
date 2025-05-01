@@ -1,0 +1,62 @@
+isso coloca no postgres
+--------------------------------------------------------------
+sudo -u postgres psql
+
+CREATE USER root_app WITH PASSWORD 'senha_root';
+
+CREATE USER escritor_app WITH PASSWORD 'senha_escritor';
+
+CREATE USER editor_app WITH PASSWORD 'senha_editor';
+
+CREATE DATABASE projeto_rust OWNER root_app;
+
+\c projeto_rust
+
+GRANT ALL PRIVILEGES ON DATABASE projeto_rust TO root_app;
+
+GRANT CONNECT ON DATABASE projeto_rust TO escritor_app;
+
+GRANT CONNECT ON DATABASE projeto_rust TO editor_app;
+
+GRANT CONNECT ON DATABASE projeto_rust TO editor_app;
+
+ALTER SCHEMA public OWNER TO escritor_app;
+
+GRANT ALL ON SCHEMA public TO escritor_app;
+\q 
+--------------------------------------------------------------
+ag no terminal dentro do diretorio 
+
+cargo install diesel_cli --no-default-features --features postgres
+
+diesel setup
+
+---------------------------------------------------------------
+
+add isso no up 
+
+----------------------------------------------------------------
+
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    cpf VARCHAR(12) NOT NULL UNIQUE,
+    data_nascimento VARCHAR(10) NOT NULL,
+    telefone VARCHAR(16) NOT NULL,
+    senha_hash TEXT NOT NULL,
+    cep VARCHAR(9) NOT NULL,
+    codigo_2fa VARCHAR(32) NOT NULL
+);
+
+GRANT SELECT, INSERT ON usuarios TO escritor_app;
+
+GRANT SELECT, UPDATE ON usuarios TO editor_app;
+
+REVOKE DELETE ON usuarios FROM PUBLIC;
+
+----------------------------------------------------------------
+
+diesel migration run
+
+
