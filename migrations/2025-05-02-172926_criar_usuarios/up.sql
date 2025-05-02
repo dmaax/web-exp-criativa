@@ -32,7 +32,9 @@ REVOKE DELETE ON contas FROM PUBLIC;
 CREATE TABLE cartoes (
     id SERIAL PRIMARY KEY,
     conta_id INTEGER NOT NULL,
-    numero_cartao VARCHAR(20) NOT NULL UNIQUE,
+    numero_cartao VARCHAR(30) NOT NULL UNIQUE,
+    data_cartao VARCHAR(8) NOT NULL,
+    codigo_cartao VARCHAR(3) NOT NULL,
     saldo_disponivel VARCHAR(20) NOT NULL DEFAULT '0.00',
     saldo_usado VARCHAR(20) NOT NULL DEFAULT '0.00',
     FOREIGN KEY (conta_id) REFERENCES contas(id) ON DELETE CASCADE
@@ -47,6 +49,7 @@ CREATE TABLE emprestimos (
     id SERIAL PRIMARY KEY,
     conta_id INTEGER NOT NULL,
     valor_disponivel VARCHAR(20) NOT NULL DEFAULT '0.00',
+    valor_emprestado VARCHAR(20) NOT NULL DEFAULT '0.00',
     FOREIGN KEY (conta_id) REFERENCES contas(id) ON DELETE CASCADE
 );
 
@@ -60,7 +63,6 @@ CREATE TABLE extratos (
     conta_id INTEGER NOT NULL,
     nome_compra VARCHAR(100) NOT NULL,
     valor VARCHAR(20) NOT NULL,
-    data_compra TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (conta_id) REFERENCES contas(id) ON DELETE CASCADE
 );
 
