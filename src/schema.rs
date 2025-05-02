@@ -1,6 +1,49 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    cartoes (id) {
+        id -> Int4,
+        conta_id -> Int4,
+        #[max_length = 20]
+        numero_cartao -> Varchar,
+        #[max_length = 20]
+        saldo_disponivel -> Varchar,
+        #[max_length = 20]
+        saldo_usado -> Varchar,
+    }
+}
+
+diesel::table! {
+    contas (id) {
+        id -> Int4,
+        usuario_id -> Int4,
+        #[max_length = 20]
+        saldo -> Varchar,
+    }
+}
+
+diesel::table! {
+    emprestimos (id) {
+        id -> Int4,
+        conta_id -> Int4,
+        #[max_length = 20]
+        valor_disponivel -> Varchar,
+    }
+}
+
+diesel::table! {
+    extratos (id) {
+        id -> Int4,
+        conta_id -> Int4,
+        #[max_length = 100]
+        nome_compra -> Varchar,
+        #[max_length = 20]
+        valor -> Varchar,
+        data_compra -> Nullable<Timestamp>,
+    }
+}
+
+diesel::table! {
     usuarios (id) {
         id -> Int4,
         #[max_length = 100]
@@ -21,14 +64,15 @@ diesel::table! {
     }
 }
 
-/*
-serve para garantir a tipagem entre o banco de dados e o nosso codigo Rust
-tb permite o sql para rust 
-e o rust para sql
+diesel::joinable!(cartoes -> contas (conta_id));
+diesel::joinable!(contas -> usuarios (usuario_id));
+diesel::joinable!(emprestimos -> contas (conta_id));
+diesel::joinable!(extratos -> contas (conta_id));
 
-resumindo ( chatgpt )
-
-schema.rs	Representa a estrutura das tabelas do banco (tabela, colunas, tipos).
-models.rs	Representa os dados em structs Rust para consultas/insert/update.
-
-*/
+diesel::allow_tables_to_appear_in_same_query!(
+    cartoes,
+    contas,
+    emprestimos,
+    extratos,
+    usuarios,
+);

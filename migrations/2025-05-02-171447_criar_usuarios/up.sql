@@ -1,42 +1,4 @@
-comandos 2.0
-----------------------------------------------------------------------------------------------------
-sudo -u postgres psql
-
--- Criar usuários com permissões específicas
-CREATE USER root_app WITH PASSWORD 'senha_root';
-CREATE USER escritor_app WITH PASSWORD 'senha_escritor';
-CREATE USER editor_app WITH PASSWORD 'senha_editor';
-
--- Criar banco de dados com root como dono
-CREATE DATABASE projeto_rust OWNER root_app;
-
--- Conectar ao banco de dados
-\c projeto_rust
-
--- Dar permissões no banco
-GRANT ALL PRIVILEGES ON DATABASE projeto_rust TO root_app;
-GRANT CONNECT ON DATABASE projeto_rust TO escritor_app;
-GRANT CONNECT ON DATABASE projeto_rust TO editor_app;
-
--- Alterar o dono do schema público e dar permissões
-ALTER SCHEMA public OWNER TO escritor_app;
-GRANT ALL ON SCHEMA public TO escritor_app;
-
-\q
-
---------------------------------------------------
-
-# Instalar o Diesel com suporte ao PostgreSQL
-cargo install diesel_cli --no-default-features --features postgres
-
-# Inicializar o diesel
-diesel setup
-
-diesel migration generate criar_usuarios 
-
-------------------------------------------------------
-dentro do up
-------------------------------------------------------
+-- Your SQL goes here
 -- Tabela de usuários
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
@@ -105,6 +67,3 @@ CREATE TABLE extratos (
 GRANT SELECT, INSERT ON extratos TO escritor_app;
 GRANT SELECT, UPDATE ON extratos TO editor_app;
 REVOKE DELETE ON extratos FROM PUBLIC;
--------------------------------------------------------------------------
-diesel migration run
-
