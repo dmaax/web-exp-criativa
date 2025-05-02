@@ -4,8 +4,12 @@ diesel::table! {
     cartoes (id) {
         id -> Int4,
         conta_id -> Int4,
-        #[max_length = 20]
+        #[max_length = 30]
         numero_cartao -> Varchar,
+        #[max_length = 8]
+        data_cartao -> Varchar,
+        #[max_length = 3]
+        codigo_cartao -> Varchar,
         #[max_length = 20]
         saldo_disponivel -> Varchar,
         #[max_length = 20]
@@ -28,6 +32,8 @@ diesel::table! {
         conta_id -> Int4,
         #[max_length = 20]
         valor_disponivel -> Varchar,
+        #[max_length = 20]
+        valor_emprestado -> Varchar,
     }
 }
 
@@ -39,7 +45,6 @@ diesel::table! {
         nome_compra -> Varchar,
         #[max_length = 20]
         valor -> Varchar,
-        data_compra -> Nullable<Timestamp>,
     }
 }
 

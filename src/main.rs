@@ -13,6 +13,7 @@ mod criacao_conta;
 mod models;
 mod schema;
 mod login;
+mod cartao;
 
 #[get("/")]
 fn root() -> Redirect {

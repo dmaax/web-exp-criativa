@@ -1,10 +1,12 @@
 use rocket::serde::{Deserialize, json::Json};
 use rocket::post;
+use crate::cartao;
 use crate::models::Usuario;
 use crate::schema::usuarios::dsl::*;
 use diesel::prelude::*;
 use crate::login_db::conectar_escritor_leitor;
 use crate::mail::{self, send_verification};
+
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
@@ -19,6 +21,11 @@ pub struct NovoUsuario {
     pub telefone: String,
     pub cep: String,
     pub senha: String,
+}
+pub struct NovoCartao {
+    pub numero_cartao: String,
+    pub saldo_disponivel: String,
+    pub saldo_usado: String,
 }
 
 #[post("/entrada_criar_conta", format = "json", data = "<dados>")]
@@ -45,6 +52,18 @@ pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<u8> {
             let cod_2fa: String = mail::gerar_segredo(); // Gera o código 2FA
 
             // cria uma tupla com os dados do novo usuário
+            /*
+    pub struct Usuario {
+    pub id: i32,
+    pub nome: String,
+    pub email: String,
+    pub cpf: String,    
+    pub data_nascimento: String,
+    pub telefone: String,
+    pub senha_hash: String,
+    pub cep: String,
+    pub codigo_2fa: String,
+} */
             let novo_usuario = (
                 nome.eq(&dados.nome),
                 email.eq(&dados.email),
@@ -55,7 +74,27 @@ pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<u8> {
                 senha_hash.eq(&dados.senha),
                 codigo_2fa.eq(&cod_2fa),
             );
+            /*
+    struct Cartao {
+    pub id: i32,
+    pub conta_id: i32,
+    pub numero_cartao: String,
+    pub saldo_disponivel: String,
+    pub saldo_usado: String,
+}
+             */
+            let numero_cartao = cartao::cria_numero(); // Gera o número do cartão
+            let saldo_disponivel = "10000".to_string(); // Saldo disponível inicial
+            let saldo_usado = "0".to_string(); // Saldo usado inicial
 
+            // cria uma tupla com os dados do novo cartão
+
+            let novo_cartao = (
+                numero_cartao.eq(&numero_cartao),
+                saldo_disponivel.eq(&saldo_disponivel),
+                saldo_usado.eq(&saldo_usado),
+                
+            ); 
             // insere o novo usuário no banco de dados
             let resultado_insercao = diesel::insert_into(usuarios)
                 .values(novo_usuario) 

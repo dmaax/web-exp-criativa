@@ -35,7 +35,7 @@ CREATE TABLE cartoes (
     numero_cartao VARCHAR(30) NOT NULL UNIQUE,
     data_cartao VARCHAR(8) NOT NULL,
     codigo_cartao VARCHAR(3) NOT NULL,
-    saldo_disponivel VARCHAR(20) NOT NULL DEFAULT '0.00',
+    saldo_disponivel VARCHAR(20) NOT NULL DEFAULT '10000.00',
     saldo_usado VARCHAR(20) NOT NULL DEFAULT '0.00',
     FOREIGN KEY (conta_id) REFERENCES contas(id) ON DELETE CASCADE
 );

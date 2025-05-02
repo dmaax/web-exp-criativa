@@ -104,6 +104,13 @@ function marcarCampoInvalido(idCampo, invalido) {
 
 
 async function validarCadastro() {
+    const cadastrarButton = document.querySelector(".register-button");
+    const originalButtonText = cadastrarButton.innerHTML;
+
+    // Disable the button and show a loading spinner
+    cadastrarButton.disabled = true;
+    cadastrarButton.innerHTML = `<span class="spinner"></span> Processando...`;
+
     let nome = document.getElementById("iname").value;
     let email = document.getElementById("iemail").value;
     let cpf = document.getElementById("icpf").value.toString();
@@ -186,7 +193,7 @@ async function validarCadastro() {
                 case 1:
                     setTimeout(() => {
                         window.location.href = "/static/html/login_page.html";
-                    }, 3000);
+                    }, 500);
                     break;
                 case 2:
                     alert("Conta já existe com este email ou CPF.");
@@ -201,7 +208,14 @@ async function validarCadastro() {
         .catch(error => {
             console.error("Erro na requisição:", error);
             alert("Erro ao conectar com o servidor.");
+        })
+        .finally(() => {
+            cadastrarButton.disabled = false;
+            cadastrarButton.innerHTML = originalButtonText;
         });
+    } else {
+        cadastrarButton.disabled = false;
+        cadastrarButton.innerHTML = originalButtonText;
     }
 }
 
