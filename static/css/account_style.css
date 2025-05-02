@@ -72,10 +72,11 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #E3F2FD;
-  padding: 15px;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .account-label {
@@ -133,10 +134,18 @@ header {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   border: none;
-  background: none;
+  background-color: #610127;
+  color: white;
+  border-radius: 5px;
+  padding: 10px 20px;
   cursor: pointer;
+  font-size: 14px;
+}
+
+.hide-values:hover {
+  background-color: #4e0120;
 }
 
 .loan-botao {
@@ -200,4 +209,40 @@ header {
 
 .btn.btn-primary:hover {
   background-color: #0056b3;
+}
+
+.transaction-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.transaction-list li {
+  padding: 10px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+  color: #555;
+}
+
+.transaction-list li:last-child {
+  border-bottom: none;
+}
+
+.card-details, .loan-details {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.loan-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.loan-button:hover {
+  background-color: #218838;
 }

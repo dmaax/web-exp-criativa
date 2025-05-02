@@ -5,8 +5,6 @@ use rocket::fs::{FileServer, NamedFile};
 use std::env;
 use std::path::Path;
 
-
-
 mod cpf;
 mod mail;
 mod autenticador;

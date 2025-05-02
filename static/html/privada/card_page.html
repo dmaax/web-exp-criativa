@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/account_style.css">
-    <title>Conta Bancária</title>
+    <title>Cartões</title>
+    <link rel="stylesheet" href="/static/css/card_style.css">
     <link rel="icon" type="image/png" href="/static/logo/dc_ls_bk_lg.png">
 </head>
 <body>
@@ -39,31 +39,29 @@
                     <div class="menu-icon">&#128179;</div>
                     <div class="menu-text">Cartões</div>
                 </a>
-                <a href="/static/html/privada/dashboard.html" class="menu-item">
-                    <div class="menu-icon">&#128176;</div>
-                    <div class="menu-text">Dashboard</div>
-                </a>
             </div>
         </aside>
 
         <main class="main-content">
             <div class="card">
-                <h2 class="section-title">Cartão Estudante</h2>
-                <div class="account-summary">
-                    <div class="account-label">Final 9999</div>
-                    <div class="account-balance">Utilizado: R$ 00,00</div>
-                    <div class="account-balance">Disponível: R$ 1.000,00</div>
+                <h2 class="section-title">Cartões Disponíveis</h2>
+                <div id="cards-container">
+                    <!-- Conteúdo dinâmico será carregado aqui -->
                 </div>
             </div>
+
             <div class="card">
-                <h2 class="section-title">Cartão Grupo Marista</h2>
-                <div class="account-summary">
-                    <div class="account-label">Final 1234</div>
-                    <div class="account-balance">Utilizado: R$ 00,00</div>
-                    <div class="account-balance">Disponível: R$ 1.000,00</div>
-                </div>
+                <h2 class="section-title">Fazer Compra</h2>
+                <form id="purchase-form">
+                    <label for="purchase-name">Nome da Compra:</label>
+                    <input type="text" id="purchase-name" name="purchase-name" required>
+                    <label for="purchase-value">Valor da Compra (R$):</label>
+                    <input type="number" id="purchase-value" name="purchase-value" step="0.01" required>
+                    <button type="submit">Confirmar Compra</button>
+                </form>
             </div>
         </main>
     </div>
 </body>
+<script src="/static/js/card_page.js"></script>
 </html>

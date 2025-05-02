@@ -1,0 +1,172 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+}
+
+header {
+  background-color: #610127;
+  color: white;
+  padding: 20px 0;
+  min-height: 80px; /* Ensure consistent height */
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.logo-nav {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-left: 10%; /* Align with account client page */
+}
+
+.logo {
+  width: 64px;
+  height: 64px; /* Fixed height for consistency */
+  border-radius: 10px;
+}
+
+.main-nav {
+  display: flex;
+  gap: 20px;
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.main-nav a:hover {
+  color: #dddddd;
+}
+
+.container {
+  display: flex;
+  margin: 0 auto;
+}
+
+.sidebar {
+  width: 260px;
+  background-color: white;
+  border-right: 1px solid #e0e0e0;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.menu-section {
+  margin-bottom: 20px;
+}
+
+.menu-title {
+  padding: 15px;
+  font-weight: bold;
+  color: #333;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  color: #333;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+
+.menu-item:hover {
+  background-color: #f5f5f5;
+  border-left-color: #0052D4;
+}
+
+.menu-item.active {
+  background-color: #E3F2FD;
+  border-left-color: #0052D4;
+}
+
+.menu-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  color: #0052D4;
+}
+
+.menu-text {
+  flex: 1;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.card {
+  background-color: white;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.loan-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9f9f9;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.loan-label {
+  font-weight: bold;
+  color: #0052D4;
+}
+
+.loan-details {
+  font-size: 14px;
+  color: #555;
+}
+
+.loan-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.loan-button:hover {
+  background-color: #218838;
+}
+
+.loan-submit-button {
+  background-color: #610127;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.loan-submit-button:hover {
+  background-color: #4e0120;
+}

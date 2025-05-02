@@ -1,15 +1,13 @@
-</head>
-<body>
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conta Bancária</title>
     <link rel="stylesheet" href="/static/css/account_style.css">
-    <title>Conta Bancaria</title>
     <link rel="icon" type="image/png" href="/static/logo/dc_ls_bk_lg.png">
-
-
+</head>
+<body>
     <header>
         <div class="container header-container">
             <div class="logo-nav">
@@ -24,68 +22,48 @@
             </div>
         </div>
     </header>
-      
-
 
     <div class="container">
         <aside class="sidebar">
-            
             <div class="menu-section">
                 <div class="menu-title">Menu</div>
                 <a href="#" class="menu-item active">
                     <div class="menu-icon">&#128178;</div>
                     <div class="menu-text">Conta cliente</div>
-                    
                 </a>
                 <a href="/static/html/privada/emprestimo_page.html" class="menu-item">
                     <div class="menu-icon">&#128184;</div>
                     <div class="menu-text">Empréstimos</div>
-                    
                 </a>
                 <a href="/static/html/privada/card_page.html" class="menu-item">
                     <div class="menu-icon">&#128179;</div>
                     <div class="menu-text">Cartões</div>
-                    
-                </a>
-                <a href="/static/html/privada/dashboard.html" class="menu-item">
-                    <div class="menu-icon">&#128176;</div>
-                    <div class="menu-text">Dashboard</div>
-                    
-                </a>
-               
-                
                 </a>
             </div>
         </aside>
 
         <main class="main-content">
-            
-            
-           
+            <div class="card">
+                <h2 class="section-title">Resumo da Conta</h2>
+                <button class="hide-values" onclick="toggleBalance()">Ocultar Valores</button>
+                <div class="account-summary">
+                    <div class="account-label">Conta Corrente</div>
+                    <div class="account-balance" id="account-balance">Carregando...</div>
+                </div>
+                <div class="account-summary">
+                    <div class="account-label">Conta Poupança</div>
+                    <div class="account-balance" id="savings-balance">Carregando...</div>
+                </div>
+            </div>
 
             <div class="card">
-                
-                    <h2 class="section-title">Resumo</h2>
-                    <button class="hide-values" onclick="ocultar()">Ocultar Valores</button>
-                
-                <div class="account-summary">
-                    <div class="account-label">Conta corrente</div>
-                    <div class="account-balance" id="valor">*****</div>
-                </div>
+                <h2 class="section-title">Últimas Transações</h2>
+                <ul class="transaction-list" id="transaction-list">
+                    <li>Carregando...</li>
+                </ul>
             </div>
         </main>
     </div>
 </body>
-<script>
-    
-        const saldoReal = "R$ 100,56";
-        let visivel = false;
-    
-        function ocultar() {
-          const saldoElemento = document.getElementById("valor");
-          visivel = !visivel;
-          saldoElemento.textContent = visivel ? saldoReal : "*****";
-        }
-    
-</script>
+<script src="/static/js/account_page.js"></script>
 </html>
