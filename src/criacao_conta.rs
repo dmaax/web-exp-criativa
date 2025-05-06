@@ -21,11 +21,7 @@ pub struct NovoUsuario {
     pub cep: String,
     pub senha: String,
 }
-pub struct NovoCartao {
-    pub numero_cartao: String,
-    pub saldo_disponivel: String,
-    pub saldo_usado: String,
-}
+
 
 
 #[post("/entrada_criar_conta", format = "json", data = "<dados>")]
