@@ -88,12 +88,18 @@
   }
 
   .btn-primary {
-    background-color: white;
-    color: #ff0040;
+    background-color: #610127;
+    color: white;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
   }
 
   .btn-primary:hover {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: #8a0135;
   }
 
   .btn-transparent {
@@ -246,6 +252,31 @@
 
   .cashback-content p {
     color: #666;
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-control {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+
+  .form-control:focus {
+    border-color: #610127;
+    outline: none;
   }
 
   @media (max-width: 768px) {

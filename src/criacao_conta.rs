@@ -1,6 +1,5 @@
 use rocket::serde::{Deserialize, json::Json};
 use rocket::post;
-use crate::cartao;
 use crate::models::Usuario;
 use crate::schema::usuarios::dsl::*;
 use diesel::prelude::*;
@@ -27,6 +26,7 @@ pub struct NovoCartao {
     pub saldo_disponivel: String,
     pub saldo_usado: String,
 }
+
 
 #[post("/entrada_criar_conta", format = "json", data = "<dados>")]
 pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<u8> {
@@ -83,18 +83,8 @@ pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<u8> {
     pub saldo_usado: String,
 }
              */
-            let numero_cartao = cartao::cria_numero(); // Gera o número do cartão
-            let saldo_disponivel = "10000".to_string(); // Saldo disponível inicial
-            let saldo_usado = "0".to_string(); // Saldo usado inicial
-
             // cria uma tupla com os dados do novo cartão
 
-            let novo_cartao = (
-                numero_cartao.eq(&numero_cartao),
-                saldo_disponivel.eq(&saldo_disponivel),
-                saldo_usado.eq(&saldo_usado),
-                
-            ); 
             // insere o novo usuário no banco de dados
             let resultado_insercao = diesel::insert_into(usuarios)
                 .values(novo_usuario) 

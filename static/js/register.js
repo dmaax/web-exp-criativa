@@ -193,7 +193,7 @@ async function validarCadastro() {
                 case 1:
                     setTimeout(() => {
                         window.location.href = "/static/html/login_page.html";
-                    }, 500);
+                    },10);
                     break;
                 case 2:
                     alert("Conta já existe com este email ou CPF.");

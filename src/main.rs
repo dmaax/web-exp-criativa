@@ -5,6 +5,7 @@ use rocket::fs::{FileServer, NamedFile};
 use std::env;
 use std::path::Path;
 
+
 mod cpf;
 mod mail;
 mod autenticador;
@@ -13,7 +14,7 @@ mod criacao_conta;
 mod models;
 mod schema;
 mod login;
-mod cartao;
+mod cria_conta_cartao;
 
 #[get("/")]
 fn root() -> Redirect {
