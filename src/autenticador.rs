@@ -11,10 +11,10 @@ use diesel::prelude::*;
 
 #[derive(Debug, Deserialize)]
 pub struct CodigoMfa {
-    pub codigo: Box<str>,
+    pub codigo: String,
 }
 // entra o base32 dai ele vai devolver os 6 numeros
-pub fn valida_codigo_autenticador(codigo: &str) -> Box<str> {
+pub fn valida_codigo_autenticador(codigo: &str) -> String {
     let seconds: u64 = SystemTime::now()
         .duration_since(SystemTime::UNIX_EPOCH)
         .unwrap()
@@ -24,7 +24,7 @@ pub fn valida_codigo_autenticador(codigo: &str) -> Box<str> {
         6,
         &base32::decode(&codigo.trim().to_lowercase()).unwrap(),
         seconds,
-    ).into()
+    )
 }
 
 // aq é onde que vai receber o json

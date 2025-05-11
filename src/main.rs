@@ -14,7 +14,7 @@ mod criacao_conta;
 mod models;
 mod schema;
 mod login;
-mod cria_conta_cartao;
+mod conf_botao_email;
 
 #[get("/")]
 fn root() -> Redirect {
@@ -35,7 +35,14 @@ fn rocket() -> _ {
     let _smtp_password: Box<str> = env::var("SMTP_PASSWORD").expect("SMTP_PASSWORD não configurado").into();
 
     rocket::build()
-        .mount("/", routes![root, html_files, cpf::vcpf, autenticador::vcod, criacao_conta::criar_conta, login::verificar_login])
+        .mount("/", routes![
+            root,
+            html_files, 
+            cpf::vcpf, 
+            autenticador::vcod, 
+            criacao_conta::criar_conta, 
+            login::verificar_login,
+         conf_botao_email::veri_email_e_cria_conta_usuario_banco])
 
 
         .mount("/static", FileServer::from("static"))
