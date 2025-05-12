@@ -16,6 +16,7 @@ mod schema;
 mod login;
 mod conf_botao_email;
 mod cria_cartao;
+mod newpasswd;
 
 #[get("/")]
 fn root() -> Redirect {
@@ -43,7 +44,8 @@ fn rocket() -> _ {
             autenticador::vcod, 
             criacao_conta::criar_conta, 
             login::verificar_login,
-         conf_botao_email::veri_email_e_cria_conta_usuario_banco])
+            conf_botao_email::veri_email_e_cria_conta_usuario_banco,
+            newpasswd::alterar_senha,])
 
 
         .mount("/static", FileServer::from("static"))
