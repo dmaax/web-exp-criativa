@@ -1,8 +1,8 @@
 document.getElementById('verification-form').addEventListener('submit', async function(event) {
     event.preventDefault();
     
-    const cpf = document.getElementById('cpf').value;
-    const codigo = document.getElementById('mfa-code').value; // <- aqui deve ser 'codigo'
+    cpf = document.getElementById('cpf').value;
+    codigo = document.getElementById('mfa-code').value; // <- aqui deve ser 'codigo'
 
     cpf = cpf.replace(/\D/g, '');
     cpf = cpf.toString();

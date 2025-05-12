@@ -15,6 +15,7 @@ mod models;
 mod schema;
 mod login;
 mod conf_botao_email;
+mod cria_cartao;
 
 #[get("/")]
 fn root() -> Redirect {
