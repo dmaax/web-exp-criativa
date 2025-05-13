@@ -15,11 +15,6 @@ pub struct CartaoInfo {
     pub usado: String,
 }
 
-#[derive(Serialize)]
-pub struct ListaCartoes {
-    pub cartoes: Vec<CartaoInfo>,
-}
-
 #[derive(Deserialize)]
 pub struct CompraRequest {
     pub cartao_id: i32,
@@ -28,17 +23,17 @@ pub struct CompraRequest {
 }
 
 #[get("/cartoes")]
-pub async fn listar_cartoes() -> Result<Json<ListaCartoes>, Status> {
+pub async fn listar_cartoes() -> Result<Json<CartaoInfo>, Status> {
     let mut conn = conectar_escritor_leitor();
     let conta_id_simulada = 1;
 
     let result = cartoes::dsl::cartoes
         .filter(cartoes::dsl::conta_id.eq(conta_id_simulada))
-        .load::<(i32, i32, String, String, String, String, String)>(&mut conn);
+        .first::<(i32, i32, String, String, String, String, String)>(&mut conn);
 
-    let cartoes_vec = match result {
-        Ok(rows) => rows.into_iter().map(|(id, _conta_id, numero, data_cartao, codigo_cartao, saldo_disp, saldo_usado)| {
-            CartaoInfo {
+    match result {
+        Ok((id, _conta_id, numero, data_cartao, codigo_cartao, saldo_disp, saldo_usado)) => {
+            let cartao = CartaoInfo {
                 id,
                 label: format!("Cartão {}", &numero[numero.len().saturating_sub(4)..]),
                 numero,
@@ -46,12 +41,11 @@ pub async fn listar_cartoes() -> Result<Json<ListaCartoes>, Status> {
                 codigo_cartao,
                 limite: format!("R$ {}", saldo_disp),
                 usado: format!("R$ {}", saldo_usado),
-            }
-        }).collect(),
-        Err(_) => vec![],
-    };
-
-    Ok(Json(ListaCartoes { cartoes: cartoes_vec }))
+            };
+            Ok(Json(cartao))
+        }
+        Err(_) => Err(Status::NotFound),
+    }
 }
 
 #[post("/compra", format = "json", data = "<compra>")]

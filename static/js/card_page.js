@@ -2,10 +2,9 @@ async function carregarCartao() {
     try {
         const resp = await fetch("/cartoes");
         if (!resp.ok) throw new Error("Erro ao buscar cartão");
-        const data = await resp.json();
-        const card = data.cartoes[0];
+        const card = await resp.json();
         const cardInfo = document.getElementById("card-info");
-        if (!card) {
+        if (!card || !card.id) {
             cardInfo.innerHTML = "<p>Nenhum cartão encontrado.</p>";
             return;
         }
