@@ -149,7 +149,7 @@ header {
 }
 
 .purchase-submit-button {
-  background-color: #0052D4;
+  background-color: #610127;
   color: white;
   border: none;
   border-radius: 5px;
@@ -162,7 +162,7 @@ header {
 }
 
 .purchase-submit-button:hover {
-  background-color: #003f7f;
+  background-color: #610127;
 }
 
 .cartao-visual {
@@ -173,7 +173,7 @@ header {
 }
 
 .cartao-box {
-  background: linear-gradient(135deg, #0052D4 0%, #4364F7 100%);
+  background: linear-gradient(135deg, #610127 100%, #4364F7 0%);
   color: #fff;
   border-radius: 16px;
   padding: 28px 32px;

@@ -80,7 +80,7 @@ header {
 }
 
 .account-label {
-  color: #0052D4;
+  color: #610127;
   font-weight: bold;
 }
 
@@ -208,7 +208,7 @@ header {
 }
 
 .btn.btn-primary:hover {
-  background-color: #0056b3;
+  background-color: #610127;
 }
 
 .transaction-list {
@@ -248,7 +248,7 @@ header {
 }
 
 .deposit-btn {
-  background-color: #0052D4;
+  background-color: #218838;
   color: white;
   border: none;
   border-radius: 5px;
