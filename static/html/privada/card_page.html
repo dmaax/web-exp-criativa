@@ -31,10 +31,6 @@
                     <div class="menu-icon">&#128178;</div>
                     <div class="menu-text">Conta cliente</div>
                 </a>
-                <a href="/static/html/privada/emprestimo_page.html" class="menu-item">
-                    <div class="menu-icon">&#128184;</div>
-                    <div class="menu-text">Empréstimos</div>
-                </a>
                 <a href="/static/html/privada/card_page.html" class="menu-item active">
                     <div class="menu-icon">&#128179;</div>
                     <div class="menu-text">Cartões</div>
@@ -44,21 +40,24 @@
 
         <main class="main-content">
             <div class="card">
-                <h2 class="section-title">Cartões Disponíveis</h2>
-                <div id="cards-container">
-                    <!-- Conteúdo dinâmico será carregado aqui -->
+                <h2 class="section-title">Seu Cartão</h2>
+                <div id="card-info" class="cartao-visual">
+                    <!-- Informações do cartão serão carregadas aqui -->
                 </div>
             </div>
 
             <div class="card">
                 <h2 class="section-title">Fazer Compra</h2>
-                <form id="purchase-form">
+                <form id="purchase-form" class="compra-form">
                     <label for="purchase-name">Nome da Compra:</label>
                     <input type="text" id="purchase-name" name="purchase-name" required>
                     <label for="purchase-value">Valor da Compra (R$):</label>
-                    <input type="number" id="purchase-value" name="purchase-value" step="0.01" required>
-                    <button type="submit">Confirmar Compra</button>
+                    <input type="number" id="purchase-value" name="purchase-value" step="0.01" min="0.01" required>
+                    <button type="submit" class="purchase-submit-button">Confirmar Compra</button>
                 </form>
+                <div id="purchase-success" class="purchase-success" style="display:none;">
+                    Compra realizada com sucesso!
+                </div>
             </div>
         </main>
     </div>

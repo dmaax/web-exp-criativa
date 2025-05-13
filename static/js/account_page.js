@@ -1,47 +1,110 @@
-const balances = {
-    account: "R$ 100,56",
-    savings: "R$ 50,00"
-};
-
-const transactions = [
-    "Compra no Mercado - R$ 30,00",
-    "Depósito - R$ 100,00",
-    "Pagamento de Conta - R$ 50,00"
-];
-
 let visible = true;
 
 function toggleBalance() {
     const accountBalance = document.getElementById("account-balance");
     const savingsBalance = document.getElementById("savings-balance");
     visible = !visible;
-    accountBalance.textContent = visible ? balances.account : "*****";
-    savingsBalance.textContent = visible ? balances.savings : "*****";
+
+    if (!visible) {
+        accountBalance.textContent = "*****";
+    } else {
+        carregarDadosConta();
+    }
 }
 
-function loadTransactions() {
-    const transactionList = document.getElementById("transaction-list");
-    transactionList.innerHTML = "";
-    transactions.forEach(transaction => {
-        const li = document.createElement("li");
-        li.textContent = transaction;
-        transactionList.appendChild(li);
-    });
+async function carregarDadosConta() {
+    try {
+        const response = await fetch("/dados-conta");
+        if (!response.ok) throw new Error("Erro ao buscar dados da conta");
+
+        const dados = await response.json();
+
+        // Atualiza saldos
+        document.getElementById("account-balance").textContent = dados.saldo_conta;
+
+        // Atualiza transações (mais recente em cima)
+        const transactionList = document.getElementById("transaction-list");
+        transactionList.innerHTML = "";
+        dados.transacoes.slice().reverse().forEach(tx => {
+            const li = document.createElement("li");
+            li.textContent = tx;
+            transactionList.appendChild(li);
+        });
+
+    } catch (err) {
+        console.error(err);
+        alert("Erro ao carregar dados da conta.");
+    }
 }
 
-function loadBalances() {
-    document.getElementById("account-balance").textContent = balances.account;
-    document.getElementById("savings-balance").textContent = balances.savings;
+function abrirModalDeposito() {
+    document.getElementById("modal-deposito").style.display = "block";
+    document.getElementById("valor-deposito").value = "";
+}
+
+function fecharModalDeposito() {
+    document.getElementById("modal-deposito").style.display = "none";
+}
+
+async function enviarDeposito(event) {
+    event.preventDefault();
+    const valor = parseFloat(document.getElementById("valor-deposito").value);
+    if (isNaN(valor) || valor <= 0) {
+        alert("Digite um valor válido para depósito.");
+        return;
+    }
+    try {
+        const resp = await fetch("/depositar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ valor })
+        });
+        if (!resp.ok) throw new Error("Erro ao depositar.");
+        fecharModalDeposito();
+        await carregarDadosConta();
+    } catch (err) {
+        alert("Erro ao depositar dinheiro.");
+    }
+}
+
+function abrirModalPagamento() {
+    document.getElementById("modal-pagamento").style.display = "block";
+    document.getElementById("valor-pagamento").value = "";
+}
+
+function fecharModalPagamento() {
+    document.getElementById("modal-pagamento").style.display = "none";
+}
+
+async function enviarPagamento(event) {
+    event.preventDefault();
+    const valor = parseFloat(document.getElementById("valor-pagamento").value);
+    if (isNaN(valor) || valor <= 0) {
+        alert("Digite um valor válido para pagamento.");
+        return;
+    }
+    try {
+        const resp = await fetch("/pagar-divida", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ valor })
+        });
+        if (!resp.ok) throw new Error("Erro ao pagar dívida.");
+        fecharModalPagamento();
+        await carregarDadosConta();
+    } catch (err) {
+        alert("Erro ao pagar dívida.");
+    }
+}
+
+// Fecha modal ao clicar fora do conteúdo
+window.onclick = function(event) {
+    const modalDep = document.getElementById("modal-deposito");
+    const modalPag = document.getElementById("modal-pagamento");
+    if (event.target === modalDep) fecharModalDeposito();
+    if (event.target === modalPag) fecharModalPagamento();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadBalances();
-    loadTransactions();
-
-    // Função para carregar dados do backend
-    async function carregarDadosConta() {
-        // ...lógica para buscar dados do backend...
-    }
-
     carregarDadosConta();
 });

@@ -1,36 +1,64 @@
-const cards = [
-    {
-        label: "Cartão PUC",
-        number: "1234 5678 9012 3456",
-        limit: "R$ 1.000,00",
-        used: "R$ 200,00"
-    },
-];
-
-function loadCards() {
-    const cardsContainer = document.getElementById("cards-container");
-    cardsContainer.innerHTML = "";
-    cards.forEach(card => {
-        const cardDiv = document.createElement("div");
-        cardDiv.classList.add("card-summary");
-        cardDiv.innerHTML = `
-            <div class="card-label">${card.label}</div>
-            <div class="card-details">
-                <p>Número: ${card.number}</p>
-                <p>Limite: ${card.limit}</p>
-                <p>Utilizado: ${card.used}</p>
+async function carregarCartao() {
+    try {
+        const resp = await fetch("/cartoes");
+        if (!resp.ok) throw new Error("Erro ao buscar cartão");
+        const data = await resp.json();
+        const card = data.cartoes[0];
+        const cardInfo = document.getElementById("card-info");
+        if (!card) {
+            cardInfo.innerHTML = "<p>Nenhum cartão encontrado.</p>";
+            return;
+        }
+        cardInfo.innerHTML = `
+            <div class="cartao-box">
+                <div class="cartao-numero"><span>Número:</span> ${card.numero}</div>
+                <div class="cartao-dados">
+                    <span>Validade:</span> ${card.data_cartao} &nbsp; 
+                    <span>Código:</span> ${card.codigo_cartao}
+                </div>
+                <div class="cartao-limite">
+                    <span>Limite:</span> ${card.limite} &nbsp; 
+                    <span>Utilizado:</span> ${card.usado}
+                </div>
             </div>
         `;
-        cardsContainer.appendChild(cardDiv);
-    });
+        // Salva o id do cartão para uso no submit
+        window.cartao_id = card.id;
+    } catch (err) {
+        document.getElementById("card-info").innerHTML = "<p>Erro ao carregar cartão.</p>";
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Função para carregar cartões disponíveis
-    async function carregarCartoes() {
-        // ...lógica para buscar dados do backend...
-    }
+    carregarCartao();
 
-    carregarCartoes();
-    loadCards();
+    document.getElementById("purchase-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const nome = document.getElementById("purchase-name").value;
+        const valor = parseFloat(document.getElementById("purchase-value").value);
+        const cartao_id = window.cartao_id;
+        if (!nome || isNaN(valor) || valor <= 0 || !cartao_id) {
+            alert("Preencha os dados corretamente.");
+            return;
+        }
+        try {
+            const resp = await fetch("/compra", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ cartao_id, nome_compra: nome, valor })
+            });
+            if (!resp.ok) {
+                alert("Compra não autorizada (limite insuficiente ou erro).");
+                return;
+            }
+            document.getElementById("purchase-success").style.display = "block";
+            setTimeout(() => {
+                document.getElementById("purchase-success").style.display = "none";
+            }, 2000);
+            document.getElementById("purchase-form").reset();
+            carregarCartao();
+        } catch {
+            alert("Erro ao registrar compra.");
+        }
+    });
 });

@@ -5,7 +5,6 @@ use rocket::fs::{FileServer, NamedFile};
 use std::env;
 use std::path::Path;
 
-
 mod cpf;
 mod mail;
 mod autenticador;
@@ -17,6 +16,8 @@ mod login;
 mod conf_botao_email;
 mod cria_cartao;
 mod newpasswd;
+mod account;
+mod card_pg;
 
 #[get("/")]
 fn root() -> Redirect {
@@ -45,7 +46,12 @@ fn rocket() -> _ {
             criacao_conta::criar_conta, 
             login::verificar_login,
             conf_botao_email::veri_email_e_cria_conta_usuario_banco,
-            newpasswd::alterar_senha,])
+            newpasswd::alterar_senha,
+            account::dados_conta,
+            account::depositar,
+            card_pg::listar_cartoes,
+            card_pg::registrar_compra,
+            account::pagar_divida,])
 
 
         .mount("/static", FileServer::from("static"))

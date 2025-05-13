@@ -31,10 +31,6 @@
                     <div class="menu-icon">&#128178;</div>
                     <div class="menu-text">Conta cliente</div>
                 </a>
-                <a href="/static/html/privada/emprestimo_page.html" class="menu-item">
-                    <div class="menu-icon">&#128184;</div>
-                    <div class="menu-text">Empréstimos</div>
-                </a>
                 <a href="/static/html/privada/card_page.html" class="menu-item">
                     <div class="menu-icon">&#128179;</div>
                     <div class="menu-text">Cartões</div>
@@ -45,14 +41,38 @@
         <main class="main-content">
             <div class="card">
                 <h2 class="section-title">Resumo da Conta</h2>
-                <button class="hide-values" onclick="toggleBalance()">Ocultar Valores</button>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <button class="hide-values" onclick="toggleBalance()">Ocultar Valores</button>
+                    <button class="deposit-btn" onclick="abrirModalDeposito()">Depositar Dinheiro</button>
+                    <button class="deposit-btn" style="background:#d40000;" onclick="abrirModalPagamento()">Pagar Dívida</button>
+                </div>
                 <div class="account-summary">
                     <div class="account-label">Conta Corrente</div>
                     <div class="account-balance" id="account-balance">Carregando...</div>
                 </div>
-                <div class="account-summary">
-                    <div class="account-label">Conta Poupança</div>
-                    <div class="account-balance" id="savings-balance">Carregando...</div>
+            </div>
+
+            <!-- Modal de Depósito -->
+            <div id="modal-deposito" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="fecharModalDeposito()">&times;</span>
+                    <h3>Depositar Dinheiro</h3>
+                    <form id="form-deposito" onsubmit="enviarDeposito(event)">
+                        <input type="number" min="0.01" step="0.01" id="valor-deposito" placeholder="Valor (R$)" required>
+                        <button type="submit" class="depositar-confirmar-btn">Depositar</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal de Pagamento -->
+            <div id="modal-pagamento" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="fecharModalPagamento()">&times;</span>
+                    <h3>Pagar Dívida</h3>
+                    <form id="form-pagamento" onsubmit="enviarPagamento(event)">
+                        <input type="number" min="0.01" step="0.01" id="valor-pagamento" placeholder="Valor (R$)" required>
+                        <button type="submit" class="depositar-confirmar-btn" style="background:#d40000;">Pagar</button>
+                    </form>
                 </div>
             </div>
 

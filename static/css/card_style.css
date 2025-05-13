@@ -149,14 +149,82 @@ header {
 }
 
 .purchase-submit-button {
-  background-color: #28a745;
+  background-color: #0052D4;
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 10px 20px;
+  padding: 12px 0;
+  font-size: 1.1rem;
+  font-weight: bold;
   cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
 }
 
 .purchase-submit-button:hover {
-  background-color: #218838;
+  background-color: #003f7f;
+}
+
+.cartao-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cartao-box {
+  background: linear-gradient(135deg, #0052D4 0%, #4364F7 100%);
+  color: #fff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  min-width: 320px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 1.1rem;
+}
+
+.cartao-numero {
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.cartao-dados, .cartao-limite {
+  font-size: 1rem;
+  display: flex;
+  gap: 16px;
+}
+
+.cartao-dados span, .cartao-limite span {
+  font-weight: bold;
+}
+
+.compra-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.compra-form label {
+  font-weight: 500;
+  color: #333;
+}
+
+.compra-form input[type="text"],
+.compra-form input[type="number"] {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #bbb;
+  font-size: 1rem;
+}
+
+.purchase-success {
+  margin-top: 16px;
+  color: #28a745;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.1rem;
 }
