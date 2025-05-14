@@ -18,6 +18,8 @@ mod cria_cartao;
 mod newpasswd;
 mod account;
 mod card_pg;
+mod altera_senha_esqueci_email;
+mod esqueci_senha_arquivo;
 
 #[get("/")]
 fn root() -> Redirect {
@@ -51,7 +53,9 @@ fn rocket() -> _ {
             account::depositar,
             card_pg::listar_cartoes,
             card_pg::registrar_compra,
-            account::pagar_divida,])
+            account::pagar_divida,
+            altera_senha_esqueci_email::alterar_senha_email,
+            esqueci_senha_arquivo::esqueci_senha,])
 
 
         .mount("/static", FileServer::from("static"))

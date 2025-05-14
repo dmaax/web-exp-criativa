@@ -191,9 +191,7 @@ async function validarCadastro() {
         .then(resultado => {
             switch (resultado) {
                 case 1:
-                    setTimeout(() => {
-                        window.location.href = "/static/html/login_page.html";
-                    },10);
+                    window.location.href = "/static/html/login_page.html";
                     break;
                 case 2:
                     alert("Conta já existe com este email ou CPF.");

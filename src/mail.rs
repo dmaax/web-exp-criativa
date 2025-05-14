@@ -11,37 +11,8 @@ pub fn gerar_segredo() -> String {
     encode(&bytes)
 }
 
-//use rand::{distributions::Alphanumeric, Rng};
-/* 
-fn generate_token() -> String {
-    rand::thread_rng()
-        .sample_iter(&Alphanumeric)
-        .take(32) // Generate a 32-character random token
-        .map(char::from)
-        .collect()
-}
-*/
 
-pub fn send_verification(email:&String ,nome:&String, codigo_autenticador_usr:&String) {
-    
-    //let token = generate_token();
-    //let verification_url = format!("https://bank.labcyber.xyz/verify?token={}", token);
-    //vai ficar assim ate ficar pronto
-    let verification_url: &str = "http://127.0.0.1:8000/static/html/conf_email.html";
-
-    //let codigo_autenticador_usr: String = newcodmfa::gerar_segredo();
-    // futuramente add essa linha, agora vai ficar uma "senha" fixa para mostrar na primiera sprint
-
-    let msg: String = format!("Ola {}\nPara voce ter acesso a sua conta futuramente, 
-    adicione esse codigo em seu aplicativo de autenticador: {}\nClique no link para verificar seu email: {}", 
-    nome, codigo_autenticador_usr, verification_url);
-    
-    let email = Message::builder()
-        .from("PUCBank <no-reply@labcyber.xyz>".parse().unwrap())
-        .to(email.parse().unwrap())
-        .subject("Verifique Seu Email")
-        .body(msg)
-        .unwrap();
+fn envia(email: Message){
 
     let smtp_user = env::var("SMTP_USER").expect("SMTP_USER not set");
     let smtp_password = env::var("SMTP_PASSWORD").expect("SMTP_PASSWORD not set");
@@ -54,5 +25,36 @@ pub fn send_verification(email:&String ,nome:&String, codigo_autenticador_usr:&S
 
 
     let _ = mailer.send(&email);
+}
+
+pub fn send_email_senha (email: &String) {
+    let url = "http://127.0.0.1:8000/static/html/altera_senha_esqueci_email.html";
+    let msg: String = format!("Ola Clique no link para alterar sua senha: {}", url);
+
+    let email = Message::builder()
+        .from("PUCBank <no-reply@labcyber.xyz>".parse().unwrap())
+        .to(email.parse().unwrap())
+        .subject("Verifique Seu Email")
+        .body(msg)
+        .unwrap();
+    envia(email);
+
+}
+
+pub fn send_verification(email:&String ,nome:&String, codigo_autenticador_usr:&String) {
+    
+    let verification_url: &str = "http://127.0.0.1:8000/static/html/conf_email.html";
+
+    let msg: String = format!("Ola {}\nPara voce ter acesso a sua conta futuramente, 
+    adicione esse codigo em seu aplicativo de autenticador: {}\nClique no link para verificar seu email: {}", 
+    nome, codigo_autenticador_usr, verification_url);
+    
+    let email = Message::builder()
+        .from("PUCBank <no-reply@labcyber.xyz>".parse().unwrap())
+        .to(email.parse().unwrap())
+        .subject("Verifique Seu Email")
+        .body(msg)
+        .unwrap();
+    envia(email);
 
 }
