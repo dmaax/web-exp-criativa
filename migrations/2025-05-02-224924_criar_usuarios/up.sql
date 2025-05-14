@@ -69,3 +69,9 @@ CREATE TABLE extratos (
 GRANT SELECT, INSERT ON extratos TO escritor_app;
 GRANT SELECT, UPDATE ON extratos TO editor_app;
 REVOKE DELETE ON extratos FROM PUBLIC;
+
+GRANT SELECT, INSERT, UPDATE ON usuarios TO escritor_app;
+GRANT SELECT, INSERT, UPDATE ON contas TO escritor_app;
+GRANT SELECT, INSERT, UPDATE ON cartoes TO escritor_app;
+GRANT SELECT, INSERT, UPDATE ON emprestimos TO escritor_app;
+GRANT SELECT, INSERT, UPDATE ON extratos TO escritor_app;
