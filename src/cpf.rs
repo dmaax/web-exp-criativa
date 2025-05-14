@@ -86,20 +86,3 @@ pub async fn vcpf(cpf_data: Json<CpfConf>) -> Result<Json<CpfResponse>, Status> 
     let valido: bool = validate(&cpf_data.cpf);
     Ok(Json(CpfResponse { valido }))
 }
-/*
-----antes estava assim sem a struct, pode ser util esse comentario no futuro, NAO TIRA ESSA MERDA DAQUI!!! ----
-
-#[post("/cfCPFbk", format = "json", data = "<cpf_data>")]
-pub async fn vcpf(cpf_data: Json<CpfConf>) -> Result<Json<bool>, Status> {
-    let valido: bool = validate(&cpf_data.cpf);
-    Ok(Json(valido))       <- encapsular para responder, antes estava como string ate o pedro taxar a gente
-}                                                                                       |  AQ EM BAIXO O EX ANTIGO Q ESTAVA EM STRING, FUNCIONAL, MAS IDIOTA 
-                                                                                        |
-                                                                                        |
-                                                                                        V
-#[post("/cfCPFbk", format = "json", data = "<cpf_data>")]
-pub async fn vcpf(cpf_data: Json<CpfConf>) -> Result<bool, Status> {
-    let valido: bool = validate(&cpf_data.cpf);
-    Ok(valido)
-}
-*/

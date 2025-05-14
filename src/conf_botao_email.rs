@@ -26,7 +26,7 @@ pub async fn veri_email_e_cria_conta_usuario_banco(entrada: Json<EntradaVerifica
     if let Ok(Some(usuario)) = usuario_result {
         let saida_codigo = valida_codigo_autenticador(&usuario.codigo_2fa);
         if entrada.codigo.trim() == saida_codigo {
-            // Criar conta
+            // criar conta
             let conta_id: i32 = diesel::insert_into(crate::schema::contas::dsl::contas)
                 .values((
                     crate::schema::contas::dsl::usuario_id.eq(usuario.id),
@@ -36,7 +36,7 @@ pub async fn veri_email_e_cria_conta_usuario_banco(entrada: Json<EntradaVerifica
                 .get_result(&mut conn)
                 .map_err(|_| Status::InternalServerError)?;
 
-            // Criar cartão
+            // criar cartão
             diesel::insert_into(crate::schema::cartoes::dsl::cartoes)
                 .values((
                     crate::schema::cartoes::dsl::conta_id.eq(conta_id),
@@ -49,7 +49,7 @@ pub async fn veri_email_e_cria_conta_usuario_banco(entrada: Json<EntradaVerifica
                 .execute(&mut conn)
                 .map_err(|_| Status::InternalServerError)?;
 
-            // Criar empréstimo
+            // criar empréstimo
             diesel::insert_into(crate::schema::emprestimos::dsl::emprestimos)
                 .values((
                     crate::schema::emprestimos::dsl::conta_id.eq(conta_id),
@@ -59,7 +59,7 @@ pub async fn veri_email_e_cria_conta_usuario_banco(entrada: Json<EntradaVerifica
                 .execute(&mut conn)
                 .map_err(|_| Status::InternalServerError)?;
 
-            // Criar extrato inicial
+            // criar extrato inicial
             diesel::insert_into(crate::schema::extratos::dsl::extratos)
                 .values((
                     crate::schema::extratos::dsl::conta_id.eq(conta_id),
