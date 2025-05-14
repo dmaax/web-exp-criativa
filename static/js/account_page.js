@@ -15,6 +15,10 @@ function toggleBalance() {
 async function carregarDadosConta() {
     try {
         const response = await fetch("/dados-conta");
+        if (response.status === 401) {
+            window.location.href = "/static/html/login_page.html";
+            return;
+        }
         if (!response.ok) throw new Error("Erro ao buscar dados da conta");
 
         const dados = await response.json();

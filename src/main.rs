@@ -4,6 +4,10 @@ use rocket::response::Redirect;
 use rocket::fs::{FileServer, NamedFile};
 use std::env;
 use std::path::Path;
+use rocket::http::Status;
+use rocket::request::{FromRequest, Outcome};
+use rocket::Request;
+
 
 mod cpf;
 mod mail;
@@ -20,6 +24,28 @@ mod account;
 mod card_pg;
 mod altera_senha_esqueci_email;
 mod esqueci_senha_arquivo;
+mod sessao;
+
+
+
+pub struct SessaoUsuario(pub i32);
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for SessaoUsuario {
+    type Error = ();
+
+    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+        if let Some(cookie) = req.cookies().get("sessao_token") {
+            if let Some(user_id) = sessao::validar_sessao(cookie.value()) {
+                return Outcome::Success(SessaoUsuario(user_id));
+            }
+        }
+
+        Outcome::Error((Status::Unauthorized, ()))
+
+    }
+}
+
 
 #[get("/")]
 fn root() -> Redirect {
@@ -49,11 +75,11 @@ fn rocket() -> _ {
             login::verificar_login,
             conf_botao_email::veri_email_e_cria_conta_usuario_banco,
             newpasswd::alterar_senha,
-            account::dados_conta,
-            account::depositar,
-            card_pg::listar_cartoes,
-            card_pg::registrar_compra,
-            account::pagar_divida,
+            account::dados_conta, // <- já usa SessaoUsuario
+            account::depositar,   // <- ajuste para usar SessaoUsuario
+            card_pg::listar_cartoes, // <- já usa SessaoUsuario
+            card_pg::registrar_compra, // <- já usa SessaoUsuario
+            account::pagar_divida, // <- ajuste para usar SessaoUsuario
             altera_senha_esqueci_email::alterar_senha_email,
             esqueci_senha_arquivo::esqueci_senha,])
 

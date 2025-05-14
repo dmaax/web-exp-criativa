@@ -1,13 +1,15 @@
 use koibumi_base32 as base32;
 use std::time::SystemTime;
 use totp_lite::{totp_custom, Sha1, DEFAULT_STEP};
-use rocket::http::Status;
+use rocket::http::{Cookie, CookieJar};
 use rocket::serde::{Deserialize, json::Json};
 use crate::login_db::conectar_escritor_leitor;
 use crate::schema::usuarios::dsl::usuarios;
-use rocket::http::CookieJar;
 use crate::models::Usuario;
+use crate::sessao;
 use diesel::prelude::*;
+use rocket::http::Status;
+
 
 #[derive(Debug, Deserialize)]
 pub struct CodigoMfa {
@@ -32,28 +34,21 @@ pub fn valida_codigo_autenticador(codigo: &str) -> String {
 
 
 #[post("/verifica_mfa", format = "json", data = "<entrada_codigo>")]
-pub async fn vcod(entrada_codigo: Json<CodigoMfa>, cookies: &CookieJar<'_>) -> Result<Json<bool>, Status> {
-    // Verifica se o cookie "user_id" existe
-    // e se o valor dele é um número
-    // se o cookie nao existir ou o valor dele nao for um numero, retorna false
+pub async fn vcod(entrada_codigo: Json<CodigoMfa>, cookies: &CookieJar<'_>) -> Result<Json<Option<String>>, Status> {
     if let Some(user_id) = cookies.get("user_id") {
-        //trata o cookie como um i32
         let user_id = user_id.value().parse::<i32>().unwrap();
-        // Conecta ao banco de dados
         let mut conn = conectar_escritor_leitor();
-
-        // Busca o usuário pelo id no banco de dados
         let usuario = usuarios.find(user_id).first::<Usuario>(&mut conn).ok();
 
-        // se o usuário existir, valida o código 2FA
-        // se o código digitado pelo usuário for igual ao código gerado pelo servidor
-        // vai retornar true
         if let Some(usuario) = usuario {
             let saida_codigo = valida_codigo_autenticador(&usuario.codigo_2fa);
             if entrada_codigo.codigo.trim() == &*saida_codigo {
-                return Ok(Json(true));
+                let token = sessao::criar_sessao(user_id, 1);
+                cookies.add(Cookie::new("sessao_token", token.clone()));
+
+                return Ok(Json(Some(token)));
             }
         }
     }
-    Ok(Json(false))
+    Ok(Json(None))
 }
