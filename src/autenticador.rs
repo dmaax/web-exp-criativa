@@ -43,6 +43,7 @@ pub async fn vcod(entrada_codigo: Json<CodigoMfa>, cookies: &CookieJar<'_>) -> R
 
         if let Some(usuario) = usuario {
             let saida_codigo = valida_codigo_autenticador(&usuario.codigo_2fa);
+
             if entrada_codigo.codigo.trim() == &*saida_codigo {
                 let token = sessao::criar_sessao(user_id, tmp);
 
@@ -50,7 +51,7 @@ pub async fn vcod(entrada_codigo: Json<CodigoMfa>, cookies: &CookieJar<'_>) -> R
                 let expires = OffsetDateTime::now_utc() + Duration::minutes(tmp.try_into().unwrap());
                 cookie.set_expires(expires);
                 cookie.set_path("/");
-                cookie.set_http_only(true);
+                cookie.set_http_only(true); // defende contra XSS
 
                 cookies.add(cookie);
 
