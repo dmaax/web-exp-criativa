@@ -1,6 +1,10 @@
 async function carregarCartao() {
     try {
         const resp = await fetch("/cartoes");
+        if (resp.status === 401) {
+            window.location.href = "/static/html/login_page.html";
+            return;
+        }
         if (!resp.ok) throw new Error("Erro ao buscar cartão");
         const card = await resp.json();
         const cardInfo = document.getElementById("card-info");
@@ -46,6 +50,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ cartao_id, nome_compra: nome, valor })
             });
+            if (resp.status === 401) {
+                window.location.href = "/static/html/login_page.html";
+                return;
+            }
             if (!resp.ok) {
                 alert("Compra não autorizada (limite insuficiente ou erro).");
                 return;

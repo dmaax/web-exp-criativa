@@ -16,3 +16,7 @@ diesel = { version = "2.2.9" , features = ["postgres"] }
 bigdecimal = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
 actix-web = "4.10.2"
+time = "0.3"
+once_cell = "1.21.3"
+cookie = "0.18.1"
+

@@ -4,6 +4,8 @@ use serde::{Serialize, Deserialize};
 use diesel::prelude::*;
 use crate::schema::{contas, extratos};
 use crate::login_db::conectar_escritor_leitor;
+use crate::SessaoUsuario;
+use crate::schema::usuarios;
 
 #[derive(Serialize)]
 pub struct DadosConta {
@@ -24,26 +26,36 @@ pub struct PagamentoRequest {
 
 // o certo é tirara esses poupanca, mas fica ai um pouco de castigo kkk
 #[get("/dados-conta")]
-pub async fn dados_conta() -> Result<Json<DadosConta>, Status> {
+pub async fn dados_conta(sessao: SessaoUsuario) -> Result<Json<DadosConta>, Status> {
     let mut conn = conectar_escritor_leitor();
 
-    // Simulação de conta_id de usuário logado
-    let conta_id_simulada = 1;
+    // Busca o id da conta do usuário autenticado
+    let conta_id_result = contas::dsl::contas
+        .inner_join(usuarios::dsl::usuarios.on(contas::dsl::usuario_id.eq(usuarios::dsl::id)))
+        .filter(usuarios::dsl::id.eq(sessao.0))
+        .select(contas::dsl::id)
+        .first::<i32>(&mut conn)
+        .optional();
+
+    let conta_id = match conta_id_result {
+        Ok(Some(id)) => id,
+        _ => return Err(Status::NotFound),
+    };
 
     // Buscar saldo da conta
     let saldo_conta_result: Result<String, _> = contas::dsl::contas
-        .filter(contas::dsl::id.eq(conta_id_simulada))
+        .filter(contas::dsl::id.eq(conta_id))
         .select(contas::dsl::saldo)
         .first(&mut conn);
 
     let saldo_conta = saldo_conta_result.unwrap_or_else(|_| "0.00".to_string());
 
     // Exemplo: saldo da poupança simulado (em produção, seria de uma tabela real)
-    let saldo_poupanca = "50.00".to_string(); // ou buscar de outra tabela
+    let saldo_poupanca = "50.00".to_string();
 
     // Buscar transações do extrato
     let extratos_result: Result<Vec<(String, String)>, _> = extratos::dsl::extratos
-        .filter(extratos::dsl::conta_id.eq(conta_id_simulada))
+        .filter(extratos::dsl::conta_id.eq(conta_id))
         .select((extratos::dsl::nome_compra, extratos::dsl::valor))
         .load(&mut conn);
 
@@ -61,14 +73,21 @@ pub async fn dados_conta() -> Result<Json<DadosConta>, Status> {
 }
 
 #[post("/depositar", format = "json", data = "<deposito>")]
-pub async fn depositar(deposito: RocketJson<DepositoRequest>) -> Result<RocketJson<DadosConta>, Status> {
-    use diesel::prelude::*;
+pub async fn depositar(sessao: SessaoUsuario, deposito: RocketJson<DepositoRequest>) -> Result<RocketJson<DadosConta>, Status> {
     let mut conn = conectar_escritor_leitor();
-    let conta_id_simulada = 1;
+
+    let conta_id = contas::dsl::contas
+        .inner_join(usuarios::dsl::usuarios.on(contas::dsl::usuario_id.eq(usuarios::dsl::id)))
+        .filter(usuarios::dsl::id.eq(sessao.0))
+        .select(contas::dsl::id)
+        .first::<i32>(&mut conn)
+        .optional()
+        .map_err(|_| Status::InternalServerError)?
+        .ok_or(Status::NotFound)?;
 
     // Buscar saldo atual como String
     let saldo_atual_result: Result<String, _> = contas::dsl::contas
-        .filter(contas::dsl::id.eq(conta_id_simulada))
+        .filter(contas::dsl::id.eq(conta_id))
         .select(contas::dsl::saldo)
         .first(&mut conn);
 
@@ -82,7 +101,7 @@ pub async fn depositar(deposito: RocketJson<DepositoRequest>) -> Result<RocketJs
     let novo_saldo_str = format!("{:.2}", novo_saldo_f64);
 
     // Atualizar saldo no banco (como string)
-    let update_result = diesel::update(contas::dsl::contas.filter(contas::dsl::id.eq(conta_id_simulada)))
+    let update_result = diesel::update(contas::dsl::contas.filter(contas::dsl::id.eq(conta_id)))
         .set(contas::dsl::saldo.eq(&novo_saldo_str))
         .execute(&mut conn);
 
@@ -94,7 +113,7 @@ pub async fn depositar(deposito: RocketJson<DepositoRequest>) -> Result<RocketJs
     // Adicionar transação no extrato
     let insert_result = diesel::insert_into(extratos::dsl::extratos)
         .values((
-            extratos::dsl::conta_id.eq(conta_id_simulada),
+            extratos::dsl::conta_id.eq(conta_id),
             extratos::dsl::nome_compra.eq("Depósito"),
             extratos::dsl::valor.eq(format!("{:.2}", deposito.valor)),
         ))
@@ -107,7 +126,7 @@ pub async fn depositar(deposito: RocketJson<DepositoRequest>) -> Result<RocketJs
 
     // Buscar extratos atualizados
     let extratos_result: Result<Vec<(String, String)>, _> = extratos::dsl::extratos
-        .filter(extratos::dsl::conta_id.eq(conta_id_simulada))
+        .filter(extratos::dsl::conta_id.eq(conta_id))
         .select((extratos::dsl::nome_compra, extratos::dsl::valor))
         .order(extratos::dsl::id.desc())
         .limit(10)
@@ -127,13 +146,21 @@ pub async fn depositar(deposito: RocketJson<DepositoRequest>) -> Result<RocketJs
 }
 
 #[post("/pagar-divida", format = "json", data = "<pagamento>")]
-pub async fn pagar_divida(pagamento: RocketJson<PagamentoRequest>) -> Result<RocketJson<DadosConta>, Status> {
+pub async fn pagar_divida(sessao: SessaoUsuario, pagamento: RocketJson<PagamentoRequest>) -> Result<RocketJson<DadosConta>, Status> {
     let mut conn = conectar_escritor_leitor();
-    let conta_id_simulada = 1;
+
+    let conta_id = contas::dsl::contas
+        .inner_join(usuarios::dsl::usuarios.on(contas::dsl::usuario_id.eq(usuarios::dsl::id)))
+        .filter(usuarios::dsl::id.eq(sessao.0))
+        .select(contas::dsl::id)
+        .first::<i32>(&mut conn)
+        .optional()
+        .map_err(|_| Status::InternalServerError)?
+        .ok_or(Status::NotFound)?;
 
     // Buscar saldo atual
     let saldo_atual_result: Result<String, _> = contas::dsl::contas
-        .filter(contas::dsl::id.eq(conta_id_simulada))
+        .filter(contas::dsl::id.eq(conta_id))
         .select(contas::dsl::saldo)
         .first(&mut conn);
 
@@ -150,7 +177,7 @@ pub async fn pagar_divida(pagamento: RocketJson<PagamentoRequest>) -> Result<Roc
     let novo_saldo_str = format!("{:.2}", novo_saldo_f64);
 
     // Atualizar saldo da conta
-    let update_result = diesel::update(contas::dsl::contas.filter(contas::dsl::id.eq(conta_id_simulada)))
+    let update_result = diesel::update(contas::dsl::contas.filter(contas::dsl::id.eq(conta_id)))
         .set(contas::dsl::saldo.eq(&novo_saldo_str))
         .execute(&mut conn);
 
@@ -162,7 +189,7 @@ pub async fn pagar_divida(pagamento: RocketJson<PagamentoRequest>) -> Result<Roc
     // Diminuir saldo_usado do cartão (primeiro cartão encontrado da conta)
     use crate::schema::cartoes;
     if let Ok((cartao_id, _conta_id, _numero, _data, _codigo, _limite, saldo_usado)) = cartoes::dsl::cartoes
-        .filter(cartoes::dsl::conta_id.eq(conta_id_simulada))
+        .filter(cartoes::dsl::conta_id.eq(conta_id))
         .select((
             cartoes::dsl::id,
             cartoes::dsl::conta_id,
@@ -184,7 +211,7 @@ pub async fn pagar_divida(pagamento: RocketJson<PagamentoRequest>) -> Result<Roc
     // Adicionar transação no extrato
     let insert_result = diesel::insert_into(extratos::dsl::extratos)
         .values((
-            extratos::dsl::conta_id.eq(conta_id_simulada),
+            extratos::dsl::conta_id.eq(conta_id),
             extratos::dsl::nome_compra.eq("Pagamento de Dívida"),
             extratos::dsl::valor.eq(format!("-{:.2}", pagamento.valor)),
         ))
@@ -196,7 +223,7 @@ pub async fn pagar_divida(pagamento: RocketJson<PagamentoRequest>) -> Result<Roc
 
     // Buscar extratos atualizados
     let extratos_result: Result<Vec<(String, String)>, _> = extratos::dsl::extratos
-        .filter(extratos::dsl::conta_id.eq(conta_id_simulada))
+        .filter(extratos::dsl::conta_id.eq(conta_id))
         .select((extratos::dsl::nome_compra, extratos::dsl::valor))
         .order(extratos::dsl::id.desc())
         .limit(10)

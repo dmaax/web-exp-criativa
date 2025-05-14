@@ -3,6 +3,9 @@ use serde::{Serialize, Deserialize};
 use diesel::prelude::*;
 use crate::schema::{cartoes, extratos};
 use crate::login_db::conectar_escritor_leitor;
+use crate::SessaoUsuario;
+use crate::schema::usuarios;
+use crate::schema::contas;
 
 #[derive(Serialize)]
 pub struct CartaoInfo {
@@ -23,12 +26,21 @@ pub struct CompraRequest {
 }
 
 #[get("/cartoes")]
-pub async fn listar_cartoes() -> Result<Json<CartaoInfo>, Status> {
+pub async fn listar_cartoes(sessao: SessaoUsuario) -> Result<Json<CartaoInfo>, Status> {
     let mut conn = conectar_escritor_leitor();
-    let conta_id_simulada = 1;
+
+    // Busca o id da conta do usuário autenticado
+    let conta_id = contas::dsl::contas
+        .inner_join(usuarios::dsl::usuarios.on(contas::dsl::usuario_id.eq(usuarios::dsl::id)))
+        .filter(usuarios::dsl::id.eq(sessao.0))
+        .select(contas::dsl::id)
+        .first::<i32>(&mut conn)
+        .optional()
+        .map_err(|_| Status::InternalServerError)?
+        .ok_or(Status::NotFound)?;
 
     let result = cartoes::dsl::cartoes
-        .filter(cartoes::dsl::conta_id.eq(conta_id_simulada))
+        .filter(cartoes::dsl::conta_id.eq(conta_id))
         .first::<(i32, i32, String, String, String, String, String)>(&mut conn);
 
     match result {
@@ -49,16 +61,27 @@ pub async fn listar_cartoes() -> Result<Json<CartaoInfo>, Status> {
 }
 
 #[post("/compra", format = "json", data = "<compra>")]
-pub async fn registrar_compra(compra: Json<CompraRequest>) -> Result<Status, Status> {
+pub async fn registrar_compra(sessao: SessaoUsuario, compra: Json<CompraRequest>) -> Result<Status, Status> {
     let mut conn = conectar_escritor_leitor();
 
-    // Buscar saldo disponível e usado
+    // Busca o id da conta do usuário autenticado
+    let conta_id = contas::dsl::contas
+        .inner_join(usuarios::dsl::usuarios.on(contas::dsl::usuario_id.eq(usuarios::dsl::id)))
+        .filter(usuarios::dsl::id.eq(sessao.0))
+        .select(contas::dsl::id)
+        .first::<i32>(&mut conn)
+        .optional()
+        .map_err(|_| Status::InternalServerError)?
+        .ok_or(Status::NotFound)?;
+
+    // Buscar saldo disponível e usado do cartão do usuário
     let cartao = cartoes::dsl::cartoes
         .filter(cartoes::dsl::id.eq(compra.cartao_id))
+        .filter(cartoes::dsl::conta_id.eq(conta_id))
         .first::<(i32, i32, String, String, String, String, String)>(&mut conn)
-        .ok();  
+        .ok();
 
-    if let Some((_id, conta_id, _numero, _data, _codigo, saldo_disp, saldo_usado)) = cartao {
+    if let Some((_id, _conta_id, _numero, _data, _codigo, saldo_disp, saldo_usado)) = cartao {
         let saldo_disp_f = saldo_disp.replace(",", ".").parse::<f64>().unwrap_or(0.0);
         let saldo_usado_f = saldo_usado.replace(",", ".").parse::<f64>().unwrap_or(0.0);
 
