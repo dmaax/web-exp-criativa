@@ -36,13 +36,13 @@ impl<'r> FromRequest<'r> for SessaoUsuario {
 
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
         if let Some(cookie) = req.cookies().get("sessao_token") {
-            if let Some(user_id) = sessao::validar_sessao(cookie.value()) {
+            let ip = req.client_ip().map(|ip| ip.to_string()).unwrap_or_default();
+            let user_agent = req.headers().get_one("User-Agent").unwrap_or("").to_string();
+            if let Some(user_id) = sessao::validar_sessao(cookie.value(), &ip, &user_agent) {
                 return Outcome::Success(SessaoUsuario(user_id));
             }
         }
-
         Outcome::Error((Status::Unauthorized, ()))
-
     }
 }
 
