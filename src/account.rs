@@ -22,7 +22,7 @@ pub struct PagamentoRequest {
     pub valor: f64,
 }
 
-// o certo é tirara esses polpanca, mas fica ai um pouco de castigo kkk
+// o certo é tirara esses poupanca, mas fica ai um pouco de castigo kkk
 #[get("/dados-conta")]
 pub async fn dados_conta() -> Result<Json<DadosConta>, Status> {
     let mut conn = conectar_escritor_leitor();
