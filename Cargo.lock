@@ -2675,6 +2675,7 @@ dependencies = [
  "actix-web",
  "bigdecimal",
  "chrono",
+ "cookie 0.18.1",
  "diesel",
  "dotenv",
  "koibumi-base32",
