@@ -48,7 +48,7 @@ pub fn criar_sessao(user_id: i32, duracao_min: u64, ip: String, user_agent: Stri
 // se a sessao não for valida, ele vai remover a sessao do hashmap
 
 pub fn validar_sessao(token: &str, ip: &str, user_agent: &str) -> Option<i32> {
-    let mut sessoes = SESSOES.lock().unwrap();
+    let mut sessoes: std::sync::MutexGuard<'_, HashMap<String, Sessao>> = SESSOES.lock().unwrap();
     if let Some(sessao) = sessoes.get(token) {
         if sessao.expira_em > SystemTime::now()
             && sessao.ip == ip

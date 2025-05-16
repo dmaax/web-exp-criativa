@@ -57,7 +57,7 @@ pub async fn vcod(
     cookies: &CookieJar<'_>,
     client: ClientInfo
 ) -> Result<Json<Option<String>>, Status> {
-    let tmp: u64 = 1;
+    let tmp: u64 = 3;
     if let Some(user_id) = cookies.get("user_id") {
         let user_id = user_id.value().parse::<i32>().unwrap();
         let mut conn = conectar_escritor_leitor();
