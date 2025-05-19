@@ -11,8 +11,8 @@
 if ($_SERVER["REQUEST_METHOD"] == "POST"){
     $nomeCompleto = $_POST['name'] ?? '';
 
-    header("Location: ../static/html/conf_email.html");
-    exit;
+    // header("Location: ../static/html/conf_email.html");
+    // exit;
 } else {
     header("Location: ../static/html/register_page.html");
     exit;
