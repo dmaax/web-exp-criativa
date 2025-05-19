@@ -125,7 +125,7 @@
   .carousel-item {
     position: relative;
     height: 100%;
-    background-image: url(/static/img_index/puc1.jpg);
+    background-image: url(../img_index/puc1.jpg);
     background-size: cover;
     background-position: center;
   }
