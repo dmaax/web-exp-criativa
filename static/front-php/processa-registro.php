@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                         $dataNasc);
 
     $stmt->execute();
-
+    
     die("Suceesso");
     header("Location: ../static/html/login_");
 } else {
