@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/login_style.css">
+    <link rel="stylesheet" href="../css/login_style.css">
     <title>Cadastro</title>
-    <link rel="icon" type="image/png" href="/static/logo/dc_ls_bk_lg.png">
+    <link rel="icon" type="image/png" href="../logo/dc_ls_bk_lg.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
 </head>
@@ -14,8 +14,8 @@
     <header>
         <div class="container header-container">
           <div class="logo-nav">
-            <a href="/static/html/index.html" class="logo-link">
-              <img src="/static/logo/pucsess.png" alt="PUCPR" class="logo">
+            <a href="../html/index.html" class="logo-link">
+              <img src="../logo/pucsess.png" alt="PUCPR" class="logo">
               <div class="header-right"></div>
             </a>
           </div>
@@ -43,7 +43,7 @@
       </div>
         <div class="content-grid">
           <div class="login-section">
-            <form class="login-form" onsubmit="return login(event)">
+            <form class="login-form" method="POST" novalidate action="../front-php/processa-login.php">
 
               <div class="form-group">
                 <label for="userId">E-mail</label>
@@ -54,7 +54,7 @@
                 <label for="password">Senha</label>
                 <input type="password" id="password" name="password">
                 <div style="margin-top: 0.5rem;">
-                  <a href="/static/html/forgot_page.html">Esqueceu sua senha?</a>
+                  <a href="../html/forgot_page.html">Esqueceu sua senha?</a>
                 </div>
               </div>
                <button type="submit" class="login-button">
@@ -70,7 +70,7 @@
           <div class="app-promotion">
             <h3>Já é um aluno PUC?</h3>
             <div class="app-content">
-              <img src="/static/img_login/anuncio.jpg" alt="Mobile banking app" class="app-image">
+              <img src="../img_login/anuncio.jpg" alt="Mobile banking app" class="app-image">
               <div class="app-text">
                 <h4>A melhor faculdade do Paraná!</h4>
                 <button class="app-button" onclick="window.location.href='https://www.pucpr.br/'">Clique aqui para se matricular</button>
@@ -84,5 +84,5 @@
   
 
   </body>
-  <script src="/static/js/login.js"></script>
+  <!-- <script src="/static/js/login.js"></script> -->
   </html>
