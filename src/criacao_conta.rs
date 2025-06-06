@@ -5,6 +5,13 @@ use crate::schema::usuarios::dsl::*;
 use diesel::prelude::*;
 use crate::login_db::conectar_escritor_leitor;
 use crate::mail::{self, send_verification};
+use rocket::serde::json::Value;
+use openssl::rsa::Rsa;
+use openssl::symm::{decrypt, Cipher};
+#[allow(deprecated)]
+use base64::{decode as base64_decode};
+use serde::Deserialize as SerdeDeserialize;
+use rocket::serde::json::serde_json;
 
 
 #[allow(dead_code)]
@@ -22,44 +29,79 @@ pub struct NovoUsuario {
     pub senha: String,
 }
 
+#[derive(Debug, SerdeDeserialize)]
+struct EncryptedPayload {
+    chave_aes_criptografada: String,
+    iv: String,
+    mensagem_criptografada: String,
+}
+
+#[derive(Debug, SerdeDeserialize)]
+#[allow(non_snake_case)]
+struct NovoUsuarioDescriptografado {
+    nome: String,
+    email: String,
+    cpf: String,
+    dataNascimento: String,
+    telefone: String,
+    cep: String,
+    senhaHash: String,
+}
 
 
 #[post("/entrada_criar_conta", format = "json", data = "<dados>")]
-pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<u8> {
-    let mut conn = conectar_escritor_leitor(); 
-    // procura se o cpf e o email ja estao cadastrados 
-    let resultado = usuarios
-        // filtra pelo cpf
-        .filter(cpf.eq(&dados.cpf)) 
-        // filtra pelo email
-        .or_filter(email.eq(&dados.email)) 
-   // tenta pegar o primeiro usuario que tem o cpf ou o email
-        .first::<Usuario>(&mut conn)  
-        // retorna em erro se o cpf ou email ja estao cadastrados e um ok se nao estao
-        // optional retorna um resultado com o usuario ou None se nao encontrar
-        .optional(); 
-        
-    //aq vamos tratar o resultado em um match
-    match resultado { 
-         // se o resultado for ok e tiver algum usuario, retorna 2 para o front, e la ele trata esse retorno 
-        Ok(Some(_)) => return Json(2),
-        // se o resultado for ok e nao tiver nenhum usuario, continua
-        Ok(None) => { 
-            let cod_2fa: String = mail::gerar_segredo(); // Gera o código 2FA
+pub fn criar_conta(dados: Json<Value>) -> Json<u8> {
+    let payload: EncryptedPayload = match serde_json::from_value(dados.into_inner()) {
+        Ok(p) => p,
+        Err(_) => return Json(3),
+    };
 
-            // cria uma tupla com os dados do novo usuário
-            /*
-    pub struct Usuario {
-    pub id: i32,
-    pub nome: String,
-    pub email: String,
-    pub cpf: String,    
-    pub data_nascimento: String,
-    pub telefone: String,
-    pub senha_hash: String,
-    pub cep: String,
-    pub codigo_2fa: String,
-} */
+    let chave_privada_pem = std::fs::read("/home/pato/duck2/web-exp-criativa/chave/private_key.pem").expect("Chave privada não encontrada");
+    let rsa = Rsa::private_key_from_pem(&chave_privada_pem).expect("Erro ao carregar chave privada");
+
+    #[allow(deprecated)]
+    let chave_aes_criptografada = base64_decode(&payload.chave_aes_criptografada).unwrap();
+    let mut chave_aes_base64 = vec![0; rsa.size() as usize];
+    let chave_aes_base64_len = rsa.private_decrypt(&chave_aes_criptografada, &mut chave_aes_base64, openssl::rsa::Padding::PKCS1).unwrap();
+    chave_aes_base64.truncate(chave_aes_base64_len);
+
+    let chave_aes_base64_str = String::from_utf8(chave_aes_base64).unwrap();
+    #[allow(deprecated)]
+    let chave_aes = base64_decode(&chave_aes_base64_str).unwrap();
+
+    #[allow(deprecated)]
+    let iv = base64_decode(&payload.iv).unwrap();
+
+    #[allow(deprecated)]
+    let mensagem_criptografada = base64_decode(&payload.mensagem_criptografada).unwrap();
+    //println!("Mensagem criptografada: {:?}", mensagem_criptografada);
+
+    let decrypted_data = decrypt(
+        Cipher::aes_256_cbc(),
+        &chave_aes,
+        Some(&iv),
+        &mensagem_criptografada
+    ).unwrap();
+
+    let decrypted_json = String::from_utf8(decrypted_data).unwrap();
+    //println!("Dados descriptografados: {}", decrypted_json);
+
+    let dados: NovoUsuarioDescriptografado = match serde_json::from_str(&decrypted_json) {
+        Ok(d) => d,
+        Err(_) => return Json(3),
+    };
+
+    let mut conn = conectar_escritor_leitor();
+    let resultado = usuarios
+        .filter(cpf.eq(&dados.cpf))
+        .or_filter(email.eq(&dados.email))
+        .first::<Usuario>(&mut conn)
+        .optional();
+
+    match resultado {
+        Ok(Some(_)) => return Json(2),
+        Ok(None) => {
+            let cod_2fa: String = mail::gerar_segredo();
             let novo_usuario = (
                 nome.eq(&dados.nome),
                 email.eq(&dados.email),
@@ -67,41 +109,21 @@ pub fn criar_conta(dados: Json<NovoUsuario>) -> Json<u8> {
                 data_nascimento.eq(&dados.dataNascimento),
                 telefone.eq(&dados.telefone),
                 cep.eq(&dados.cep),
-                senha_hash.eq(&dados.senha),
+                senha_hash.eq(&dados.senhaHash),
                 codigo_2fa.eq(&cod_2fa),
             );
-            /*
-    struct Cartao {
-    pub id: i32,
-    pub conta_id: i32,
-    pub numero_cartao: String,
-    pub saldo_disponivel: String,
-    pub saldo_usado: String,
-}
-             */
-            // cria uma tupla com os dados do novo cartão
-
-            // insere o novo usuário no banco de dados
             let resultado_insercao = diesel::insert_into(usuarios)
-                .values(novo_usuario) 
-                // insere o novo usuário (git add por exemplo)
-                .execute(&mut conn); 
-            // executa a inserção (git push por exemplo)
+                .values(novo_usuario)
+                .execute(&mut conn);
 
             match resultado_insercao {
                 Ok(_) => {
-                    // envia o e-mail de verificação
-                    send_verification(&dados.email, &dados.nome, &cod_2fa); 
-                    // envia o e-mail de verificação
-                    // retorna 1 para o front, que significa que a inserção foi bem sucedida
-
+                    send_verification(&dados.email, &dados.nome, &cod_2fa);
                     Json(1)
                 },
-                Err(_) => Json(3), 
-                // erro ao inserir no banco de dados
+                Err(_) => Json(3),
             }
         },
-        Err(_) => Json(3), 
-        //erro 
+        Err(_) => Json(3),
     }
 }
