@@ -107,7 +107,6 @@ async function validarCadastro() {
     const cadastrarButton = document.querySelector(".register-button");
     const originalButtonText = cadastrarButton.innerHTML;
 
-    // Disable the button and show a loading spinner
     cadastrarButton.disabled = true;
     cadastrarButton.innerHTML = `<span class="spinner"></span> Processando...`;
 
@@ -216,8 +215,3 @@ async function validarCadastro() {
         cadastrarButton.innerHTML = originalButtonText;
     }
 }
-
-
-
-
-

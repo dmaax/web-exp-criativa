@@ -25,6 +25,7 @@ mod card_pg;
 mod altera_senha_esqueci_email;
 mod esqueci_senha_arquivo;
 mod sessao;
+mod chave;
 
 
 
@@ -93,7 +94,8 @@ fn rocket() -> _ {
             card_pg::registrar_compra,
             account::pagar_divida,
             altera_senha_esqueci_email::alterar_senha_email,
-            esqueci_senha_arquivo::esqueci_senha,])
+            esqueci_senha_arquivo::esqueci_senha,
+            chave::pega_chave])
 
 
         .mount("/static", FileServer::from("static"))
