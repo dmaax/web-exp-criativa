@@ -17,7 +17,6 @@ async function login(event) {
   const loginButton = document.querySelector(".login-button");
   const originalButtonText = loginButton.innerHTML;
 
-  // Disable the button and show a loading spinner
   loginButton.disabled = true;
   loginButton.innerHTML = `<span class="spinner"></span> Processando...`;
 
