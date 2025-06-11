@@ -56,7 +56,7 @@ pub fn criar_conta(dados: Json<Value>) -> Json<u8> {
         Err(_) => return Json(3),
     };
 
-    let chave_privada_pem = std::fs::read("/home/pato/duck2/web-exp-criativa/chave/private_key.pem").expect("Chave privada não encontrada");
+    let chave_privada_pem = std::fs::read("chave/private_key.pem").expect("Chave privada não encontrada");
     let rsa = Rsa::private_key_from_pem(&chave_privada_pem).expect("Erro ao carregar chave privada");
 
     #[allow(deprecated)]
