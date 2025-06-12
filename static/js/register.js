@@ -66,6 +66,7 @@ async function getPublicKey() {
     }
 }
 
+
 async function validarCadastro() {
     const cadastrarButton = document.querySelector(".register-button");
     const originalButtonText = cadastrarButton.innerHTML;

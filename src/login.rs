@@ -5,38 +5,84 @@ use crate::schema::usuarios::dsl::*;
 use crate::login_db::conectar_escritor_leitor;
 use crate::models::Usuario;
 use rocket::http::{Cookie, CookieJar};
+use openssl::rsa::Rsa;
+use openssl::symm::{decrypt, Cipher};
+#[allow(deprecated)]
+use base64::{decode as base64_decode};
+use serde::Deserialize as SerdeDeserialize;
+use rocket::serde::json::serde_json;
+
+#[derive(Debug, SerdeDeserialize)]
+pub struct EncryptedPayload {
+    chave_aes_criptografada: String,
+    iv: String,
+    mensagem_criptografada: String,
+}
+
+#[derive(Debug, SerdeDeserialize)]
+struct CredenciaisLoginDescriptografado {
+    email: String,
+    senha: String, 
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
 //entrada do json
+
 pub struct CredenciaisLogin { 
+    #[allow(dead_code)]
     pub email: String,
+    #[allow(dead_code)]
     pub senha: String,
+
 } 
 
+#[post("/login", format = "json", data = "<payload>")]
+pub fn verificar_login(payload: Json<EncryptedPayload>, cookies: &CookieJar<'_>) -> Json<bool> {
+    // Descriptografa a chave AES
+    let chave_privada_pem = std::fs::read("chave/private_key.pem").expect("Chave privada não encontrada");
+    let rsa = Rsa::private_key_from_pem(&chave_privada_pem).expect("Erro ao carregar chave privada");
 
-#[post("/login", format = "json", data = "<credenciais>")]
-// pq precisa passar como parametro na func se n existe cookie antes? simples
-// vms comparar com uma caixinha de cookie, q a gente quer colocar um cookie dentro dela
-// e depois pegar esse cookie, e ver se ele existe ou n
-// mas eu preciso da caixinha de cookie para colocar o cookie dentro dela
-// ent oq estamos passando como parametro é a caixinha de cookie para a gente poder ler e add, dai vira putaria e a gente faz oq quiser
-pub fn verificar_login(credenciais: Json<CredenciaisLogin>, cookies: &CookieJar<'_>) -> Json<bool> {
+    #[allow(deprecated)]
+    let chave_aes_criptografada = base64_decode(&payload.chave_aes_criptografada).unwrap();
+    let mut chave_aes_base64 = vec![0; rsa.size() as usize];
+    let chave_aes_base64_len = rsa.private_decrypt(&chave_aes_criptografada, &mut chave_aes_base64, openssl::rsa::Padding::PKCS1).unwrap();
+    chave_aes_base64.truncate(chave_aes_base64_len);
+
+    let chave_aes_base64_str = String::from_utf8(chave_aes_base64).unwrap();
+    #[allow(deprecated)]
+    let chave_aes = base64_decode(&chave_aes_base64_str).unwrap();
+
+    #[allow(deprecated)]
+    let iv = base64_decode(&payload.iv).unwrap();
+
+    #[allow(deprecated)]
+    let mensagem_criptografada = base64_decode(&payload.mensagem_criptografada).unwrap();
+
+    let decrypted_data = decrypt(
+        Cipher::aes_256_cbc(),
+        &chave_aes,
+        Some(&iv),
+        &mensagem_criptografada
+    ).unwrap();
+
+    let decrypted_json = String::from_utf8(decrypted_data).unwrap();
+
+    let credenciais: CredenciaisLoginDescriptografado = match serde_json::from_str(&decrypted_json) {
+        Ok(d) => d,
+        Err(_) => return Json(false),
+    };
+
     let mut conn = conectar_escritor_leitor();
-    // SELECT * FROM usuarios WHERE email = email-entrada
     let resultado = usuarios
         .filter(email.eq(&credenciais.email))
-        //pega o primeiro usuario que tem o email
-        .first::<Usuario>(&mut conn) 
-        //optional retorna um resultado com o usuario ou None se nao encontrar
+        .first::<Usuario>(&mut conn)
         .optional();
 
     match resultado {
         Ok(Some(usuario)) => {
             if credenciais.senha == usuario.senha_hash {
-                // Cria um cookie com o ID do usuário 
                 cookies.add(Cookie::new("user_id", usuario.id.to_string()));
-                //retorna true se existe e vai para o front
-                // e la ele trata esse retorno
                 Json(true)
             } else {
                 Json(false)

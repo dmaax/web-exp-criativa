@@ -74,7 +74,7 @@ pub fn criar_conta(dados: Json<Value>) -> Json<u8> {
 
     #[allow(deprecated)]
     let mensagem_criptografada = base64_decode(&payload.mensagem_criptografada).unwrap();
-    //println!("Mensagem criptografada: {:?}", mensagem_criptografada);
+    println!("Mensagem criptografada: {:?}", mensagem_criptografada);
 
     let decrypted_data = decrypt(
         Cipher::aes_256_cbc(),
@@ -84,7 +84,7 @@ pub fn criar_conta(dados: Json<Value>) -> Json<u8> {
     ).unwrap();
 
     let decrypted_json = String::from_utf8(decrypted_data).unwrap();
-    //println!("Dados descriptografados: {}", decrypted_json);
+    println!("Dados descriptografados: {}", decrypted_json);
 
     let dados: NovoUsuarioDescriptografado = match serde_json::from_str(&decrypted_json) {
         Ok(d) => d,
@@ -127,3 +127,4 @@ pub fn criar_conta(dados: Json<Value>) -> Json<u8> {
         Err(_) => Json(3),
     }
 }
+
