@@ -1,4 +1,4 @@
-use rocket::serde::{Deserialize, json::Json};
+use rocket::serde::{ json::Json };
 use rocket::post;
 use diesel::prelude::*;
 use crate::schema::usuarios::dsl::*;
@@ -12,6 +12,9 @@ use base64::{decode as base64_decode};
 use serde::Deserialize as SerdeDeserialize;
 use rocket::serde::json::serde_json;
 
+use crate::chave::obter_chave_privada;
+
+
 #[derive(Debug, SerdeDeserialize)]
 pub struct EncryptedPayload {
     chave_aes_criptografada: String,
@@ -22,26 +25,15 @@ pub struct EncryptedPayload {
 #[derive(Debug, SerdeDeserialize)]
 struct CredenciaisLoginDescriptografado {
     email: String,
-    senha: String, 
+    senha: String,
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(crate = "rocket::serde")]
-//entrada do json
-
-pub struct CredenciaisLogin { 
-    #[allow(dead_code)]
-    pub email: String,
-    #[allow(dead_code)]
-    pub senha: String,
-
-} 
 
 #[post("/login", format = "json", data = "<payload>")]
 pub fn verificar_login(payload: Json<EncryptedPayload>, cookies: &CookieJar<'_>) -> Json<bool> {
     // Descriptografa a chave AES
-    let chave_privada_pem = std::fs::read("chave/private_key.pem").expect("Chave privada não encontrada");
-    let rsa = Rsa::private_key_from_pem(&chave_privada_pem).expect("Erro ao carregar chave privada");
+    let chave_privada_pem = obter_chave_privada();
+    let rsa = Rsa::private_key_from_pem(&chave_privada_pem.as_bytes()).expect("Erro ao carregar chave privada");
 
     #[allow(deprecated)]
     let chave_aes_criptografada = base64_decode(&payload.chave_aes_criptografada).unwrap();

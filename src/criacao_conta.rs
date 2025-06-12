@@ -12,6 +12,7 @@ use openssl::symm::{decrypt, Cipher};
 use base64::{decode as base64_decode};
 use serde::Deserialize as SerdeDeserialize;
 use rocket::serde::json::serde_json;
+use crate::chave::obter_chave_privada;
 
 
 #[allow(dead_code)]
@@ -56,8 +57,8 @@ pub fn criar_conta(dados: Json<Value>) -> Json<u8> {
         Err(_) => return Json(3),
     };
 
-    let chave_privada_pem = std::fs::read("chave/private_key.pem").expect("Chave privada não encontrada");
-    let rsa = Rsa::private_key_from_pem(&chave_privada_pem).expect("Erro ao carregar chave privada");
+    let chave_privada_pem = obter_chave_privada();
+    let rsa = Rsa::private_key_from_pem(&chave_privada_pem.as_bytes()).expect("Erro ao carregar chave privada");
 
     #[allow(deprecated)]
     let chave_aes_criptografada = base64_decode(&payload.chave_aes_criptografada).unwrap();
