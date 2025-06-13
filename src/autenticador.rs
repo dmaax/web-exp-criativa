@@ -12,6 +12,12 @@ use diesel::prelude::*;
 use rocket::http::Status;
 use cookie::time::{Duration, OffsetDateTime};
 use rocket::http::SameSite;
+use openssl::rsa::Rsa;
+use openssl::symm::{decrypt, Cipher};
+use rocket::serde::json::serde_json;
+#[allow(deprecated)]
+use base64::{decode as base64_decode};
+
 
 #[derive(Debug, Deserialize)]
 pub struct CodigoMfa {
@@ -34,7 +40,6 @@ impl<'r> FromRequest<'r> for ClientInfo {
     }
 }
 
-// entra o base32 dai ele vai devolver os 6 numeros
 pub fn valida_codigo_autenticador(codigo: &str) -> String {
     let seconds: u64 = SystemTime::now()
         .duration_since(SystemTime::UNIX_EPOCH)
@@ -51,12 +56,61 @@ pub fn valida_codigo_autenticador(codigo: &str) -> String {
 // aq é onde que vai receber o json
 // e vai fazer a validação do código digitado pela usuerio
 
-#[post("/verifica_mfa", format = "json", data = "<entrada_codigo>")]
+#[derive(Debug, Deserialize)]
+pub struct EncryptedMfaPayload {
+    pub chave_aes_criptografada: String,
+    pub iv: String,
+    pub mensagem_criptografada: String,
+}
+
+#[post("/verifica_mfa", format = "json", data = "<payload>")]
 pub async fn vcod(
-    entrada_codigo: Json<CodigoMfa>,
+    payload: Json<EncryptedMfaPayload>,
     cookies: &CookieJar<'_>,
     client: ClientInfo
 ) -> Result<Json<Option<String>>, Status> {
+    // Descriptografa a chave AES
+    let chave_privada_pem = crate::chave::obter_chave_privada();
+    let rsa = Rsa::private_key_from_pem(&chave_privada_pem.as_bytes())
+        .map_err(|_| Status::InternalServerError)?;
+
+    #[allow(deprecated)]
+    let chave_aes_criptografada = base64_decode(&payload.chave_aes_criptografada)
+        .map_err(|_| Status::BadRequest)?;
+    let mut chave_aes_base64 = vec![0; rsa.size() as usize];
+    let chave_aes_base64_len = rsa.private_decrypt(
+        &chave_aes_criptografada,
+        &mut chave_aes_base64,
+        openssl::rsa::Padding::PKCS1
+    ).map_err(|_| Status::InternalServerError)?;
+    chave_aes_base64.truncate(chave_aes_base64_len);
+
+    let chave_aes_base64_str = String::from_utf8(chave_aes_base64)
+        .map_err(|_| Status::BadRequest)?;
+    #[allow(deprecated)]
+    let chave_aes = base64_decode(&chave_aes_base64_str)
+        .map_err(|_| Status::BadRequest)?;
+
+    #[allow(deprecated)]
+    let iv = base64_decode(&payload.iv).map_err(|_| Status::BadRequest)?;
+    #[allow(deprecated)]
+    let mensagem_criptografada = base64_decode(&payload.mensagem_criptografada)
+        .map_err(|_| Status::BadRequest)?;
+
+    let decrypted_data = decrypt(
+        Cipher::aes_256_cbc(),
+        &chave_aes,
+        Some(&iv),
+        &mensagem_criptografada
+    ).map_err(|_| Status::InternalServerError)?;
+
+    let decrypted_json = String::from_utf8(decrypted_data)
+        .map_err(|_| Status::BadRequest)?;
+
+    let codigo_mfa: CodigoMfa = serde_json::from_str(&decrypted_json)
+        .map_err(|_| Status::BadRequest)?;
+
+    // Continua com a lógica existente usando codigo_mfa.codigo
     let tmp: u64 = 20;
     if let Some(user_id) = cookies.get("user_id") {
         let user_id = user_id.value().parse::<i32>().unwrap();
@@ -66,7 +120,7 @@ pub async fn vcod(
         if let Some(usuario) = usuario {
             let saida_codigo = valida_codigo_autenticador(&usuario.codigo_2fa);
 
-            if entrada_codigo.codigo.trim() == &*saida_codigo {
+            if codigo_mfa.codigo.trim() == &*saida_codigo {
                 let token = sessao::criar_sessao(user_id, tmp, client.ip, client.user_agent);
 
                 let mut cookie = Cookie::new("sessao_token", token.clone());

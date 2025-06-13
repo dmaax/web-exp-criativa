@@ -12,6 +12,7 @@ use base64::{decode as base64_decode};
 use serde::Deserialize as SerdeDeserialize;
 use rocket::serde::json::serde_json;
 
+
 use crate::chave::obter_chave_privada;
 
 
