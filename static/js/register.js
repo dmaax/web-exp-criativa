@@ -11,15 +11,55 @@ function verificacpfbasico(c) {
     return c.length === 11;
 }
 
-function verificacpfbkend(c2) {
-    return fetch('/verifica_cpf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cpf: c2 })
-    })
-    .then(response => response.ok ? response.json() : Promise.reject("Erro"))
-    .then(data => data.valido)
-    .catch(() => false);
+async function verificacpfbkend(c2) {
+    try {
+        const publicKeyPem = await getPublicKey();
+        if (!publicKeyPem) {
+            console.error("Erro ao obter chave pública");
+            return false;
+        }
+
+        const mensagemJson = JSON.stringify({ cpf: c2 });
+
+        // Gerar chave AES e IV
+        const aesKey = CryptoJS.lib.WordArray.random(32);
+        const iv = CryptoJS.lib.WordArray.random(16);
+
+        // Criptografar mensagem com AES
+        const encrypted = CryptoJS.AES.encrypt(mensagemJson, aesKey, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        });
+
+        const encryptedMessageBase64 = encrypted.toString();
+        const aesKeyBase64 = CryptoJS.enc.Base64.stringify(aesKey);
+        const ivBase64 = CryptoJS.enc.Base64.stringify(iv);
+
+        // Criptografar chave AES com RSA
+        const encryptor = new JSEncrypt();
+        encryptor.setPublicKey(publicKeyPem);
+        const encryptedAesKey = encryptor.encrypt(aesKeyBase64);
+
+        const payload = {
+            chave_aes_criptografada: encryptedAesKey,
+            iv: ivBase64,
+            mensagem_criptografada: encryptedMessageBase64
+        };
+
+        const response = await fetch('/verifica_cpf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) return false;
+        const data = await response.json();
+        return data.valido;
+    } catch (error) {
+        console.error("Erro na verificação do CPF:", error);
+        return false;
+    }
 }
 
 function verificaidade(i) {

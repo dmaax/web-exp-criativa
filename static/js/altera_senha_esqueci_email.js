@@ -7,6 +7,17 @@ function marcarCampoInvalido(idCampo, invalido) {
     }
 }
 
+async function getPublicKey() {
+    try {
+        const response = await fetch("/pega-chave");
+        const data = await response.json();
+        return data.chavepb;
+    } catch (error) {
+        console.error("Erro ao obter chave pública:", error);
+        return null;
+    }
+}
+
 async function alterarSenha() {
     const alterarSenhaButton = document.getElementById("alterarSenhaButton");
     const originalButtonText = alterarSenhaButton.innerHTML;
@@ -26,6 +37,7 @@ async function alterarSenha() {
     let novaSenhaValida = senhaRegex.test(novaSenha);
     let confirmarSenhaValida = novaSenha === confirmarSenha;
 
+    
     marcarCampoInvalido("cpf", !cpfValido);
     marcarCampoInvalido("mfa", !mfaValido);
     marcarCampoInvalido("newPassword", !novaSenhaValida);
@@ -34,21 +46,48 @@ async function alterarSenha() {
     if (cpfValido && mfaValido && novaSenhaValida && confirmarSenhaValida) {
         try {
             const novaSenhaHash = CryptoJS.SHA256(novaSenha).toString(CryptoJS.enc.Hex);
+            
+            const publicKeyPem = await getPublicKey();
+            if (!publicKeyPem) {
+                throw new Error("Erro ao obter chave pública");
+            }
 
-            console.log("Enviando dados para o servidor:", {
+            const mensagemJson = JSON.stringify({
                 cpf: cpf,
                 mfa: mfa,
                 nova_senha: novaSenhaHash,
             });
 
+            // Gerar chave AES e IV
+            const aesKey = CryptoJS.lib.WordArray.random(32);
+            const iv = CryptoJS.lib.WordArray.random(16);
+
+            // Criptografar com AES
+            const encrypted = CryptoJS.AES.encrypt(mensagemJson, aesKey, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+
+            const encryptedMessageBase64 = encrypted.toString();
+            const aesKeyBase64 = CryptoJS.enc.Base64.stringify(aesKey);
+            const ivBase64 = CryptoJS.enc.Base64.stringify(iv);
+
+            // Criptografar chave AES com RSA
+            const encryptor = new JSEncrypt();
+            encryptor.setPublicKey(publicKeyPem);
+            const encryptedAesKey = encryptor.encrypt(aesKeyBase64);
+
+            const payload = {
+                chave_aes_criptografada: encryptedAesKey,
+                iv: ivBase64,
+                mensagem_criptografada: encryptedMessageBase64
+            };
+
             const response = await fetch("/alterar_senha_email", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    cpf: cpf,
-                    mfa: mfa,
-                    nova_senha: novaSenhaHash,
-                }),
+                body: JSON.stringify(payload)
             });
 
             console.log("Resposta do servidor:", response);
@@ -64,6 +103,7 @@ async function alterarSenha() {
             }
         } catch (error) {
             console.error("Erro ao conectar com o servidor:", error);
+            alert("Erro ao processar alteração de senha");
         }
     }
 
