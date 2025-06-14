@@ -1,32 +1,67 @@
-use rocket::{get, http::Status, serde::json::Json};
-use rocket::{post, serde::json::Json as RocketJson};
+use rocket::{ http::Status, serde::json::Json};
+use rocket::{post};
 use serde::{Serialize, Deserialize};
 use diesel::prelude::*;
 use crate::schema::{contas, extratos};
 use crate::login_db::conectar_escritor_leitor;
 use crate::SessaoUsuario;
 use crate::schema::usuarios;
+use openssl::symm::{encrypt, decrypt, Cipher};
+use rocket::serde::json::serde_json;
+use rocket::serde::json::Value;
+use openssl::rsa::Rsa;
+use base64::{Engine as _, engine::general_purpose::STANDARD as base64}; // New import for base64
 
 #[derive(Serialize)]
 pub struct DadosConta {
     pub saldo_conta: String,
-    pub saldo_poupanca: String,
+
     pub transacoes: Vec<String>,
 }
-
+#[allow(dead_code)]
 #[derive(Deserialize)]
 pub struct DepositoRequest {
     pub valor: f64,
 }
-
+#[allow(dead_code)]
 #[derive(Deserialize)]
 pub struct PagamentoRequest {
     pub valor: f64,
 }
 
-// o certo é tirara esses poupanca, mas fica ai um pouco de castigo kkk
-#[get("/dados-conta")]
-pub async fn dados_conta(sessao: SessaoUsuario) -> Result<Json<DadosConta>, Status> {
+
+#[allow(deprecated)]
+#[post("/dados-conta", format = "json", data = "<dados>")]  // Mudando para POST
+pub async fn dados_conta(sessao: SessaoUsuario, dados: Json<Value>) -> Result<Json<EncryptedResponse>, Status> {
+    let payload: EncryptedPayload = match serde_json::from_value(dados.into_inner()) {
+        Ok(p) => p,
+        Err(_) => return Err(Status::BadRequest),
+    };
+
+    // Descriptografar a chave AES usando RSA
+    let chave_privada_pem = crate::chave::obter_chave_privada();
+    let rsa = Rsa::private_key_from_pem(chave_privada_pem.as_bytes())
+        .map_err(|_| Status::InternalServerError)?;
+
+    let chave_aes_criptografada = base64.decode(&payload.chave_aes_criptografada)
+        .map_err(|_| Status::BadRequest)?;
+    
+    let mut chave_aes_base64 = vec![0; rsa.size() as usize];
+    let chave_aes_base64_len = rsa.private_decrypt(
+        &chave_aes_criptografada,
+        &mut chave_aes_base64,
+        openssl::rsa::Padding::PKCS1
+    ).map_err(|_| Status::InternalServerError)?;
+    
+    chave_aes_base64.truncate(chave_aes_base64_len);
+    
+    let chave_aes_base64_str = String::from_utf8(chave_aes_base64)
+        .map_err(|_| Status::BadRequest)?;
+    
+    let chave_aes = base64.decode(&chave_aes_base64_str)
+        .map_err(|_| Status::BadRequest)?;
+
+    // Resto da lógica existente de buscar dados
     let mut conn = conectar_escritor_leitor();
 
     // Busca o id da conta do usuário autenticado
@@ -50,9 +85,7 @@ pub async fn dados_conta(sessao: SessaoUsuario) -> Result<Json<DadosConta>, Stat
 
     let saldo_conta = saldo_conta_result.unwrap_or_else(|_| "0.00".to_string());
 
-    // Exemplo: saldo da poupança simulado (em produção, seria de uma tabela real)
-    let saldo_poupanca = "50.00".to_string();
-
+    
     // Buscar transações do extrato
     let extratos_result: Result<Vec<(String, String)>, _> = extratos::dsl::extratos
         .filter(extratos::dsl::conta_id.eq(conta_id))
@@ -65,15 +98,76 @@ pub async fn dados_conta(sessao: SessaoUsuario) -> Result<Json<DadosConta>, Stat
         .map(|(nome, valor)| format!("{} - R$ {}", nome, valor))
         .collect();
 
-    Ok(Json(DadosConta {
+    let dados = DadosConta {
         saldo_conta: format!("R$ {}", saldo_conta),
-        saldo_poupanca: format!("R$ {}", saldo_poupanca),
         transacoes,
-    }))
+    };
+
+    // Use a chave AES recebida para criptografar a resposta
+    Ok(Json(dados.encrypt(&chave_aes)))
 }
 
-#[post("/depositar", format = "json", data = "<deposito>")]
-pub async fn depositar(sessao: SessaoUsuario, deposito: RocketJson<DepositoRequest>) -> Result<RocketJson<DadosConta>, Status> {
+#[derive(Debug, Deserialize)]
+struct EncryptedPayload {
+    chave_aes_criptografada: String,
+    iv: String,
+    mensagem_criptografada: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ValorRequest {
+    valor: f64,
+}
+
+#[post("/depositar", format = "json", data = "<dados>")]
+pub async fn depositar(sessao: SessaoUsuario, dados: Json<Value>) -> Result<Json<EncryptedResponse>, Status> {
+    let payload: EncryptedPayload = match serde_json::from_value(dados.into_inner()) {
+        Ok(p) => p,
+        Err(_) => return Err(Status::BadRequest),
+    };
+
+    // Descriptografar usando a chave privada RSA
+    let chave_privada_pem = crate::chave::obter_chave_privada();
+    let rsa = Rsa::private_key_from_pem(chave_privada_pem.as_bytes())
+        .map_err(|_| Status::InternalServerError)?;
+
+    let chave_aes_criptografada = base64.decode(&payload.chave_aes_criptografada)
+        .map_err(|_| Status::BadRequest)?;
+    
+    let mut chave_aes_base64 = vec![0; rsa.size() as usize];
+    let chave_aes_base64_len = rsa.private_decrypt(
+        &chave_aes_criptografada,
+        &mut chave_aes_base64,
+        openssl::rsa::Padding::PKCS1
+    ).map_err(|_| Status::InternalServerError)?;
+    
+    chave_aes_base64.truncate(chave_aes_base64_len);
+    
+    let chave_aes_base64_str = String::from_utf8(chave_aes_base64)
+        .map_err(|_| Status::BadRequest)?;
+    
+    let chave_aes = base64.decode(&chave_aes_base64_str)
+        .map_err(|_| Status::BadRequest)?;
+    
+    let iv = base64.decode(&payload.iv)
+        .map_err(|_| Status::BadRequest)?;
+    
+    let mensagem_criptografada = base64.decode(&payload.mensagem_criptografada)
+        .map_err(|_| Status::BadRequest)?;
+
+    let decrypted_data = decrypt(
+        Cipher::aes_256_cbc(),
+        &chave_aes,
+        Some(&iv),
+        &mensagem_criptografada
+    ).map_err(|_| Status::InternalServerError)?;
+
+    let decrypted_json = String::from_utf8(decrypted_data)
+        .map_err(|_| Status::BadRequest)?;
+
+    let deposito: ValorRequest = serde_json::from_str(&decrypted_json)
+        .map_err(|_| Status::BadRequest)?;
+
     let mut conn = conectar_escritor_leitor();
 
     let conta_id = contas::dsl::contas
@@ -138,15 +232,66 @@ pub async fn depositar(sessao: SessaoUsuario, deposito: RocketJson<DepositoReque
         .map(|(nome, valor)| format!("{} - R$ {}", nome, valor))
         .collect();
 
-    Ok(RocketJson(DadosConta {
+    // Create DadosConta struct before encrypting
+    let dados_conta = DadosConta {
         saldo_conta: format!("R$ {}", novo_saldo_str),
-        saldo_poupanca: format!("R$ {}", "50.00"),
         transacoes,
-    }))
+    };
+
+    // Use a mesma chave AES para criptografar a resposta
+    Ok(Json(dados_conta.encrypt(&chave_aes)))
 }
 
-#[post("/pagar-divida", format = "json", data = "<pagamento>")]
-pub async fn pagar_divida(sessao: SessaoUsuario, pagamento: RocketJson<PagamentoRequest>) -> Result<RocketJson<DadosConta>, Status> {
+#[post("/pagar-divida", format = "json", data = "<dados>")]
+pub async fn pagar_divida(sessao: SessaoUsuario, dados: Json<Value>) -> Result<Json<EncryptedResponse>, Status> {
+    let payload: EncryptedPayload = match serde_json::from_value(dados.into_inner()) {
+        Ok(p) => p,
+        Err(_) => return Err(Status::BadRequest),
+    };
+
+    // Descriptografar usando a chave privada RSA
+    let chave_privada_pem = crate::chave::obter_chave_privada();
+    let rsa = Rsa::private_key_from_pem(chave_privada_pem.as_bytes())
+        .map_err(|_| Status::InternalServerError)?;
+
+    let chave_aes_criptografada = base64.decode(&payload.chave_aes_criptografada)
+        .map_err(|_| Status::BadRequest)?;
+    
+    let mut chave_aes_base64 = vec![0; rsa.size() as usize];
+    let chave_aes_base64_len = rsa.private_decrypt(
+        &chave_aes_criptografada,
+        &mut chave_aes_base64,
+        openssl::rsa::Padding::PKCS1
+    ).map_err(|_| Status::InternalServerError)?;
+    
+    chave_aes_base64.truncate(chave_aes_base64_len);
+    
+    let chave_aes_base64_str = String::from_utf8(chave_aes_base64)
+        .map_err(|_| Status::BadRequest)?;
+    
+    let chave_aes = base64.decode(&chave_aes_base64_str)
+        .map_err(|_| Status::BadRequest)?;
+    
+    let iv = base64.decode(&payload.iv)
+        .map_err(|_| Status::BadRequest)?;
+    
+    let mensagem_criptografada = base64.decode(&payload.mensagem_criptografada)
+        .map_err(|_| Status::BadRequest)?;
+
+    let decrypted_data = decrypt(
+        Cipher::aes_256_cbc(),
+        &chave_aes,
+        Some(&iv),
+        &mensagem_criptografada
+    ).map_err(|_| Status::InternalServerError)?;
+
+    let decrypted_json = String::from_utf8(decrypted_data)
+        .map_err(|_| Status::BadRequest)?;
+
+    let pagamento: ValorRequest = serde_json::from_str(&decrypted_json)
+        .map_err(|_| Status::BadRequest)?;
+
+    // Resto da lógica existente
     let mut conn = conectar_escritor_leitor();
 
     let conta_id = contas::dsl::contas
@@ -158,25 +303,22 @@ pub async fn pagar_divida(sessao: SessaoUsuario, pagamento: RocketJson<Pagamento
         .map_err(|_| Status::InternalServerError)?
         .ok_or(Status::NotFound)?;
 
-    // Buscar saldo atual
+    // Buscar saldo atual como String
     let saldo_atual_result: Result<String, _> = contas::dsl::contas
         .filter(contas::dsl::id.eq(conta_id))
         .select(contas::dsl::saldo)
         .first(&mut conn);
 
+    // Converter saldo para f64, tratar caso de erro
     let saldo_atual_f64 = match saldo_atual_result {
         Ok(ref s) => s.replace(",", ".").parse::<f64>().unwrap_or(0.0),
         Err(_) => 0.0,
     };
 
-    if pagamento.valor > saldo_atual_f64 {
-        return Err(Status::BadRequest);
-    }
-
     let novo_saldo_f64 = saldo_atual_f64 - pagamento.valor;
     let novo_saldo_str = format!("{:.2}", novo_saldo_f64);
 
-    // Atualizar saldo da conta
+    // Atualizar saldo no banco (como string)
     let update_result = diesel::update(contas::dsl::contas.filter(contas::dsl::id.eq(conta_id)))
         .set(contas::dsl::saldo.eq(&novo_saldo_str))
         .execute(&mut conn);
@@ -235,9 +377,40 @@ pub async fn pagar_divida(sessao: SessaoUsuario, pagamento: RocketJson<Pagamento
         .map(|(nome, valor)| format!("{} - R$ {}", nome, valor))
         .collect();
 
-    Ok(RocketJson(DadosConta {
+    // Create DadosConta struct before encrypting
+    let dados_conta = DadosConta {
         saldo_conta: format!("R$ {}", novo_saldo_str),
-        saldo_poupanca: format!("R$ {}", "50.00"),
         transacoes,
-    }))
+    };
+
+    // Use a mesma chave AES para criptografar a resposta
+    Ok(Json(dados_conta.encrypt(&chave_aes)))
+}
+
+#[derive(Serialize)]
+pub struct EncryptedResponse {
+    encrypted_data: String,
+    iv: String
+}
+#[allow(deprecated)]
+impl DadosConta {
+    fn encrypt(&self, key: &[u8]) -> EncryptedResponse {
+        let json = serde_json::to_string(&self).unwrap();
+        
+        // Create a mutable buffer for IV
+        let mut iv = vec![0u8; 16];
+        openssl::rand::rand_bytes(&mut iv).unwrap();
+        
+        let encrypted = encrypt(
+            Cipher::aes_256_cbc(),
+            key,
+            Some(&iv),
+            json.as_bytes()
+        ).unwrap();
+
+        EncryptedResponse {
+            encrypted_data: base64.encode(encrypted),
+            iv: base64.encode(iv)
+        }
+    }
 }
