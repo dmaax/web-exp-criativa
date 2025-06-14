@@ -23,3 +23,5 @@ pub fn obter_chave_privada() -> String {
     dotenv().ok();
     std::env::var("CHAVE_PRIVADA").unwrap_or_else(|_| "chave_nao_encontrada".to_string())
 }
+
+
