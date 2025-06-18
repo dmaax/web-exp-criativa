@@ -104,6 +104,7 @@ pub async fn veri_email_e_cria_conta_usuario_banco(payload: Json<EncryptedPayloa
                 .map_err(|_| Status::InternalServerError)?;
 
             // criar empréstimo
+            // descontinuado
             diesel::insert_into(crate::schema::emprestimos::dsl::emprestimos)
                 .values((
                     crate::schema::emprestimos::dsl::conta_id.eq(conta_id),

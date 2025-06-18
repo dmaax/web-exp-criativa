@@ -102,7 +102,6 @@ pub async fn listar_cartoes(sessao: SessaoUsuario, dados: Json<Value>) -> Result
         let decrypted_str = String::from_utf8(decrypted_data)
             .map_err(|_| Status::BadRequest)?;
 
-        // Process decrypted data if needed
         println!("Dados descriptografados: {}", decrypted_str);
     }
 
