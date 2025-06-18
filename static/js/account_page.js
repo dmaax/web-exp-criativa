@@ -1,5 +1,5 @@
 let visible = true;
-let currentAesKey = null; // Armazenar a chave AES atual
+let currentAesKey = null;
 
 async function decryptResponse(encryptedData, iv, aesKey) {
     const ivParsed = CryptoJS.enc.Base64.parse(iv);
