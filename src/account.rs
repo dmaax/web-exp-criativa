@@ -40,28 +40,34 @@ pub async fn dados_conta(sessao: SessaoUsuario, dados: Json<Value>) -> Result<Js
 
     // Descriptografar a chave AES usando RSA
     let chave_privada_pem = crate::chave::obter_chave_privada();
+    // transforma em um obj rsa
     let rsa = Rsa::private_key_from_pem(chave_privada_pem.as_bytes())
         .map_err(|_| Status::InternalServerError)?;
 
+    //decodifica a chave AES criptografada de Base64 para bytes brutos
     let chave_aes_criptografada = base64.decode(&payload.chave_aes_criptografada)
         .map_err(|_| Status::BadRequest)?;
     
+    // Prepara um buffer para armazenar a chave AES descriptografada
     let mut chave_aes_base64 = vec![0; rsa.size() as usize];
+    // Descriptografa a chave AES usando a chave privada RSA do servidor
     let chave_aes_base64_len = rsa.private_decrypt(
-        &chave_aes_criptografada,
-        &mut chave_aes_base64,
-        openssl::rsa::Padding::PKCS1
+        &chave_aes_criptografada, // A chave AES que foi criptografada com RSA
+        &mut chave_aes_base64,  // Onde a chave descriptografada será escrita
+        openssl::rsa::Padding::PKCS1 // O preenchimento (padding) usado na criptografia RSA
     ).map_err(|_| Status::InternalServerError)?;
-    
+    // Trunca o buffer para o tamanho real da chave
     chave_aes_base64.truncate(chave_aes_base64_len);
-    
+
+    // Converte a chave AES descriptografada para uma string UTF-8
     let chave_aes_base64_str = String::from_utf8(chave_aes_base64)
         .map_err(|_| Status::BadRequest)?;
     
+    // Decodifica a chave AES (que estava em Base64) para seus bytes brutos finais
     let chave_aes = base64.decode(&chave_aes_base64_str)
         .map_err(|_| Status::BadRequest)?;
 
-    // Resto da lógica existente de buscar dados
+
     let mut conn = conectar_escritor_leitor();
 
     // Busca o id da conta do usuário autenticado
@@ -86,7 +92,7 @@ pub async fn dados_conta(sessao: SessaoUsuario, dados: Json<Value>) -> Result<Js
     let saldo_conta = saldo_conta_result.unwrap_or_else(|_| "0.00".to_string());
 
     
-    // Buscar transações do extrato
+
     let extratos_result: Result<Vec<(String, String)>, _> = extratos::dsl::extratos
         .filter(extratos::dsl::conta_id.eq(conta_id))
         .select((extratos::dsl::nome_compra, extratos::dsl::valor))
@@ -232,7 +238,6 @@ pub async fn depositar(sessao: SessaoUsuario, dados: Json<Value>) -> Result<Json
         .map(|(nome, valor)| format!("{} - R$ {}", nome, valor))
         .collect();
 
-    // Create DadosConta struct before encrypting
     let dados_conta = DadosConta {
         saldo_conta: format!("R$ {}", novo_saldo_str),
         transacoes,
@@ -328,7 +333,6 @@ pub async fn pagar_divida(sessao: SessaoUsuario, dados: Json<Value>) -> Result<J
         return Err(Status::InternalServerError);
     }
 
-    // Diminuir saldo_usado do cartão (primeiro cartão encontrado da conta)
     use crate::schema::cartoes;
     if let Ok((cartao_id, _conta_id, _numero, _data, _codigo, _limite, saldo_usado)) = cartoes::dsl::cartoes
         .filter(cartoes::dsl::conta_id.eq(conta_id))
@@ -397,7 +401,6 @@ impl DadosConta {
     fn encrypt(&self, key: &[u8]) -> EncryptedResponse {
         let json = serde_json::to_string(&self).unwrap();
         
-        // Create a mutable buffer for IV
         let mut iv = vec![0u8; 16];
         openssl::rand::rand_bytes(&mut iv).unwrap();
         
