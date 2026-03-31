@@ -1,3 +1,6 @@
+Este arquivo foi consolidado em `docs/instalacao_postgres.md`.
+Use aquele guia para o passo a passo atualizado e completo.
+
 doc desse negocio -> https://www.postgresql.org/docs/current/
 
 criacao -> https://www.postgresql.org/docs/current/tutorial-createdb.html

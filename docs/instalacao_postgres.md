@@ -1,46 +1,98 @@
-Este arquivo foi consolidado em `docs/instalacao_postgres.md`.
-Use aquele guia para o passo a passo atualizado e completo.
+# Instalação e configuração do PostgreSQL para o projeto
 
-comandos 2.0
-----------------------------------------------------------------------------------------------------
+Este guia reúne os passos necessários para criar o banco, configurar os usuários e rodar as migrações com Diesel.
+
+## 1. Instalar o PostgreSQL e dependências
+
+No Ubuntu/Debian:
+
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib libpq-dev pkg-config libssl-dev gcc
+```
+
+## 2. Instalar o Diesel CLI com suporte a PostgreSQL
+
+```bash
+cargo install diesel_cli --no-default-features --features postgres
+```
+
+## 3. Criar o banco de dados e os usuários PostgreSQL
+
+Execute o `psql` como usuário postgres:
+
+```bash
 sudo -u postgres psql
+```
 
--- Criar usuários com permissões específicas
+Dentro do `psql`:
+
+```sql
 CREATE USER root_app WITH PASSWORD 'senha_root';
 CREATE USER escritor_app WITH PASSWORD 'senha_escritor';
 CREATE USER editor_app WITH PASSWORD 'senha_editor';
 
--- Criar banco de dados com root como dono
 CREATE DATABASE projeto_rust OWNER root_app;
-
--- Conectar ao banco de dados
 \c projeto_rust
 
--- Dar permissões no banco
 GRANT ALL PRIVILEGES ON DATABASE projeto_rust TO root_app;
 GRANT CONNECT ON DATABASE projeto_rust TO escritor_app;
 GRANT CONNECT ON DATABASE projeto_rust TO editor_app;
 
--- Alterar o dono do schema público e dar permissões
 ALTER SCHEMA public OWNER TO escritor_app;
 GRANT ALL ON SCHEMA public TO escritor_app;
+```
 
+Depois:
+
+```sql
 \q
+```
 
---------------------------------------------------
+## 4. Criar o arquivo `.env` na raiz do projeto
 
-# Instalar o Diesel com suporte ao PostgreSQL
-cargo install diesel_cli --no-default-features --features postgres
+Exemplo de `.env`:
 
-# Inicializar o diesel
+```env
+DB_ROOT_URL=postgres://root_app:senha_root@localhost/projeto_rust
+DB_ESCRITOR_URL=postgres://escritor_app:senha_escritor@localhost/projeto_rust
+DB_EDITOR_URL=postgres://editor_app:senha_editor@localhost/projeto_rust
+DATABASE_URL=postgres://escritor_app:senha_escritor@localhost/projeto_rust
+```
+
+### Observações importantes
+
+- `DATABASE_URL` é usado por `src/login_db.rs` em `conectar_escritor_leitor()`.
+- `DB_EDITOR_URL` é usado por `src/login_db.rs` em `conectar_editor()`.
+- `DB_ROOT_URL` fica disponível para administração, mas não é obrigatório para o uso normal da aplicação.
+
+## 5. Ajustar `diesel.toml` se necessário
+
+O arquivo `diesel.toml` deve apontar para o diretório de migrações do projeto. No root do repositório, o correto é:
+
+```toml
+[migrations_directory]
+dir = "migrations"
+```
+
+Se o arquivo ainda não existir ou estiver apontando para um caminho errado, atualize-o.
+
+## 6. Inicializar Diesel e criar a migração
+
+Execute:
+
+```bash
 diesel setup
+diesel migration generate criar_usuarios
+```
 
-diesel migration generate criar_usuarios 
+Isso cria o diretório `migrations/<timestamp>_criar_usuarios`.
 
-------------------------------------------------------
-dentro do up
-------------------------------------------------------
--- Your SQL goes here
+## 7. Preencher o arquivo `up.sql`
+
+No arquivo `migrations/<timestamp>_criar_usuarios/up.sql`, coloque o SQL abaixo.
+
+```sql
 -- Tabela de usuários
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
@@ -58,7 +110,7 @@ GRANT SELECT, INSERT ON usuarios TO escritor_app;
 GRANT SELECT, UPDATE ON usuarios TO editor_app;
 REVOKE DELETE ON usuarios FROM PUBLIC;
 
--- Tabela de contas (ligada a usuários)
+-- Tabela de contas
 CREATE TABLE contas (
     id SERIAL PRIMARY KEY,
     usuario_id INTEGER NOT NULL,
@@ -70,7 +122,7 @@ GRANT SELECT, INSERT ON contas TO escritor_app;
 GRANT SELECT, UPDATE ON contas TO editor_app;
 REVOKE DELETE ON contas FROM PUBLIC;
 
--- Tabela de cartões (ligada a contas)
+-- Tabela de cartões
 CREATE TABLE cartoes (
     id SERIAL PRIMARY KEY,
     conta_id INTEGER NOT NULL,
@@ -86,7 +138,7 @@ GRANT SELECT, INSERT ON cartoes TO escritor_app;
 GRANT SELECT, UPDATE ON cartoes TO editor_app;
 REVOKE DELETE ON cartoes FROM PUBLIC;
 
--- Tabela de empréstimos (ligada a contas)
+-- Tabela de empréstimos
 CREATE TABLE emprestimos (
     id SERIAL PRIMARY KEY,
     conta_id INTEGER NOT NULL,
@@ -99,7 +151,7 @@ GRANT SELECT, INSERT ON emprestimos TO escritor_app;
 GRANT SELECT, UPDATE ON emprestimos TO editor_app;
 REVOKE DELETE ON emprestimos FROM PUBLIC;
 
--- Tabela de extratos (ligada a contas)
+-- Tabela de extratos
 CREATE TABLE extratos (
     id SERIAL PRIMARY KEY,
     conta_id INTEGER NOT NULL,
@@ -117,61 +169,28 @@ GRANT SELECT, INSERT, UPDATE ON contas TO escritor_app;
 GRANT SELECT, INSERT, UPDATE ON cartoes TO escritor_app;
 GRANT SELECT, INSERT, UPDATE ON emprestimos TO escritor_app;
 GRANT SELECT, INSERT, UPDATE ON extratos TO escritor_app;
+```
 
--------------------------------------------------------------------------
+## 8. Executar a migração
+
+```bash
 diesel migration run
+```
 
--------------------------------------------------------------------------
-aq esta o models por duvidas
---------------------------------------------------------------------------
-use serde::{Deserialize, Serialize};
-use diesel::Queryable;
+## 9. Conferir se o banco está funcionando
 
-#[derive(Queryable, Serialize, Deserialize)]
-pub struct Cartao {
-    pub id: i32,
-    pub conta_id: i32,
-    pub numero_cartao: String,
-    pub data_cartao: String,
-    pub codigo_cartao: String,
-    pub saldo_disponivel: String,
-    pub saldo_usado: String,
-}
+Use o `psql` para verificar as tabelas:
 
-#[derive(Queryable, Serialize, Deserialize)]
-pub struct Conta {
-    pub id: i32,
-    pub usuario_id: i32,
-    pub saldo: String,
-}
+```bash
+sudo -u postgres psql -d projeto_rust -c "\dt"
+```
 
-#[derive(Queryable, Serialize, Deserialize)]
-pub struct Emprestimo {
-    pub id: i32,
-    pub conta_id: i32,
-    pub valor_disponivel: String,
-    pub valor_emprestado: String,
-}
+E, para ver dados em `usuarios`:
 
-#[derive(Queryable, Serialize, Deserialize)]
-pub struct Extrato {
-    pub id: i32,
-    pub conta_id: i32,
-    pub nome_compra: String,
-    pub valor: String,
-}
+```bash
+sudo -u postgres psql -d projeto_rust -c "SELECT * FROM usuarios;"
+```
 
-#[derive(Queryable, Serialize, Deserialize)]
-pub struct Usuario {
-    pub id: i32,
-    pub nome: String,
-    pub email: String,
-    pub cpf: String,
-    pub data_nascimento: String,
-    pub telefone: String,
-    pub senha_hash: String,
-    pub cep: String,
-    pub codigo_2fa: String,
-}
+## 10. Dica final
 
-
+Se `diesel setup` falhar por falta de permissão, use temporariamente `DATABASE_URL` com `root_app` para inicializar o banco e depois volte para `escritor_app`.
