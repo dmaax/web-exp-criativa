@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-criativa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-criativa123}
+      POSTGRES_DB: ${POSTGRES_DB:-criativa_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-criativa} -d ${POSTGRES_DB:-criativa_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-criativa}:${POSTGRES_PASSWORD:-criativa123}@db:5432/${POSTGRES_DB:-criativa_db}
+      DB_EDITOR_URL: postgres://${POSTGRES_USER:-criativa}:${POSTGRES_PASSWORD:-criativa123}@db:5432/${POSTGRES_DB:-criativa_db}
+      ROCKET_ADDRESS: 0.0.0.0
+      ROCKET_PORT: 8000
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+
+volumes:
+  pgdata:

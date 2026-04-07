@@ -1,0 +1,8 @@
+target/
+.env
+.git/
+.gitignore
+docs/
+chave/
+*.md
+Cargo.lock.bak
