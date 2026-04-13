@@ -193,11 +193,21 @@ async function validarCadastro() {
         })
         .then(response => response.json())
         .then(resultado => {
-            switch (resultado) {
-                case 1: window.location.href = "/static/html/login_page.html"; break;
-                case 2: alert("Conta já existe com este email ou CPF."); break;
-                case 3: alert("Erro ao criar conta. Tente novamente mais tarde."); break;
-                default: alert("Erro inesperado.");
+            if (resultado.status === 1) {
+                // Conta criada com sucesso, agora mostrar MFA
+                document.getElementById("form-registro").style.display = "none";
+                document.getElementById("mfa-section").style.display = "block";
+                document.getElementById("mfa-secret").textContent = resultado.mfa_secret;
+                
+                // Guardar email e cpf para validação do MFA
+                window.emailParaMfa = email;
+                window.cpfParaMfa = cpf;
+            } else if (resultado.status === 2) {
+                alert("Conta já existe com este email ou CPF.");
+            } else if (resultado.status === 3) {
+                alert("Erro ao criar conta. Tente novamente mais tarde.");
+            } else {
+                alert("Erro inesperado.");
             }
         })
         .catch(error => {
@@ -211,5 +221,51 @@ async function validarCadastro() {
     } else {
         cadastrarButton.disabled = false;
         cadastrarButton.innerHTML = originalButtonText;
+    }
+}
+
+async function validarMfaConta() {
+    const codigoMfa = document.getElementById("mfa-codigo").value.trim();
+    const botaoConfirmar = event.target;
+    const botaoTextoOriginal = botaoConfirmar.innerHTML;
+    
+    if (codigoMfa.length !== 6 || isNaN(codigoMfa)) {
+        alert("Digite um código de 6 dígitos válido.");
+        return;
+    }
+    
+    botaoConfirmar.disabled = true;
+    botaoConfirmar.innerHTML = `<span class="spinner"></span> Confirmando...`;
+    
+    const payload = {
+        email: window.emailParaMfa,
+        cpf: window.cpfParaMfa,
+        codigo_mfa: codigoMfa
+    };
+    
+    try {
+        const response = await fetch("/confirma_mfa_conta", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        
+        const resultado = await response.json();
+        
+        if (resultado.status === 1) {
+            alert("Conta criada com sucesso! Redirecionando para login...");
+            window.location.href = "/static/html/login_page.html";
+        } else if (resultado.status === 2) {
+            alert("Código MFA inválido. Tente novamente.");
+            document.getElementById("mfa-codigo").value = "";
+        } else if (resultado.status === 3) {
+            alert("Erro ao confirmar MFA. Tente novamente.");
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+        alert("Erro ao conectar com o servidor.");
+    } finally {
+        botaoConfirmar.disabled = false;
+        botaoConfirmar.innerHTML = botaoTextoOriginal;
     }
 }

@@ -44,7 +44,7 @@
             </div>
             
             <div class="content-grid">
-                <div class="login-section">
+                <div class="login-section" id="form-registro">
                     <form class="login-form">
                         <h3 class="form-section-title">Informações Pessoais</h3>
                         
@@ -114,6 +114,32 @@
                             Cadastrar
                         </button>
                     </form>
+                </div>
+
+                <div class="login-section" id="mfa-section" style="display: none;">
+                    <h3 class="form-section-title">Ative a Autenticação de Dois Fatores</h3>
+                    <div class="mfa-container">
+                        <p>Para proteger sua conta, adicione este código ao seu aplicativo autenticador:</p>
+                        <div class="mfa-code-box">
+                            <code id="mfa-secret" style="font-size: 18px; letter-spacing: 2px; font-weight: bold; word-break: break-all;"></code>
+                        </div>
+                        <p style="font-size: 12px; margin-top: 15px; color: #666;">
+                            Use aplicativos como Google Authenticator, Microsoft Authenticator ou Authy para escanear o QR code ou digite manualmente o código acima.
+                        </p>
+                        
+                        <h4 style="margin-top: 25px; margin-bottom: 10px;">Confirme o Código</h4>
+                        <div class="form-group">
+                            <label for="mfa-codigo">Digite o código de 6 dígitos do seu autenticador:</label>
+                            <input type="text" id="mfa-codigo" name="mfa-codigo" placeholder="000000" maxlength="6" required>
+                        </div>
+
+                        <button type="button" class="register-button" onclick="validarMfaConta()" style="margin-top: 15px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Confirmar MFA
+                        </button>
+                    </div>
                 </div>
                 <div class="app-promotion">
                     <h3>Já é um aluno PUC?</h3>

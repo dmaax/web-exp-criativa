@@ -40,21 +40,3 @@ pub fn send_email_senha (email: &String) {
     envia(email);
 
 }
-
-pub fn send_verification(email:&String ,nome:&String, codigo_autenticador_usr:&String) {
-    
-    let verification_url: &str = "http://127.0.0.1:8000/static/html/conf_email.html";
-
-    let msg: String = format!("Ola {}\nPara voce ter acesso a sua conta futuramente, 
-    adicione esse codigo em seu aplicativo de autenticador: {}\nClique no link para verificar seu email: {}", 
-    nome, codigo_autenticador_usr, verification_url);
-    
-    let email = Message::builder()
-        .from("PUCBank <no-reply@labcyber.xyz>".parse().unwrap())
-        .to(email.parse().unwrap())
-        .subject("Verifique Seu Email")
-        .body(msg)
-        .unwrap();
-    envia(email);
-
-}

@@ -4,8 +4,9 @@ use crate::models::Usuario;
 use crate::schema::usuarios::dsl::*;
 use diesel::prelude::*;
 use crate::login_db::conectar_escritor_leitor;
-use crate::mail::{self, send_verification};
+use crate::mail;
 use rocket::serde::json::Value;
+use crate::autenticador;
 use openssl::rsa::Rsa;
 use openssl::symm::{decrypt, Cipher};
 #[allow(deprecated)]
@@ -49,12 +50,20 @@ struct NovoUsuarioDescriptografado {
     senhaHash: String,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub struct ValidaMfaConta {
+    pub email: String,
+    pub cpf: String,
+    pub codigo_mfa: String,
+}
+
 
 #[post("/entrada_criar_conta", format = "json", data = "<dados>")]
-pub fn criar_conta(dados: Json<Value>) -> Json<u8> {
+pub fn criar_conta(dados: Json<Value>) -> Json<Value> {
     let payload: EncryptedPayload = match serde_json::from_value(dados.into_inner()) {
         Ok(p) => p,
-        Err(_) => return Json(3),
+        Err(_) => return Json(serde_json::json!({"status": 3})),
     };
 
     let chave_privada_pem = obter_chave_privada();
@@ -89,7 +98,7 @@ pub fn criar_conta(dados: Json<Value>) -> Json<u8> {
 
     let dados: NovoUsuarioDescriptografado = match serde_json::from_str(&decrypted_json) {
         Ok(d) => d,
-        Err(_) => return Json(3),
+        Err(_) => return Json(serde_json::json!({"status": 3})),
     };
 
     let mut conn = conectar_escritor_leitor();
@@ -100,7 +109,7 @@ pub fn criar_conta(dados: Json<Value>) -> Json<u8> {
         .optional();
 
     match resultado {
-        Ok(Some(_)) => return Json(2),
+        Ok(Some(_)) => return Json(serde_json::json!({"status": 2})),
         Ok(None) => {
             let cod_2fa: String = mail::gerar_segredo();
             let novo_usuario = (
@@ -119,13 +128,44 @@ pub fn criar_conta(dados: Json<Value>) -> Json<u8> {
 
             match resultado_insercao {
                 Ok(_) => {
-                    send_verification(&dados.email, &dados.nome, &cod_2fa);
-                    Json(1)
+                    Json(serde_json::json!({
+                        "status": 1,
+                        "mfa_secret": cod_2fa
+                    }))
                 },
-                Err(_) => Json(3),
+                Err(_) => Json(serde_json::json!({"status": 3})),
             }
         },
-        Err(_) => Json(3),
+        Err(_) => Json(serde_json::json!({"status": 3})),
+    }
+}
+
+#[post("/confirma_mfa_conta", format = "json", data = "<dados>")]
+pub fn confirma_mfa_conta(dados: Json<ValidaMfaConta>) -> Json<Value> {
+    let mut conn = conectar_escritor_leitor();
+    
+    let resultado = usuarios
+        .filter(email.eq(&dados.email))
+        .filter(cpf.eq(&dados.cpf))
+        .first::<Usuario>(&mut conn)
+        .optional();
+
+    match resultado {
+        Ok(Some(usuario)) => {
+            let codigo_valido = autenticador::valida_codigo_autenticador(&usuario.codigo_2fa);
+            
+            if codigo_valido == dados.codigo_mfa {
+                Json(serde_json::json!({"status": 1, "message": "MFA confirmado com sucesso"}))
+            } else {
+                Json(serde_json::json!({"status": 2, "message": "Código MFA inválido"}))
+            }
+        },
+        Ok(None) => {
+            Json(serde_json::json!({"status": 2, "message": "Usuário não encontrado"}))
+        },
+        Err(_) => {
+            Json(serde_json::json!({"status": 3, "message": "Erro ao confirmar MFA"}))
+        }
     }
 }
 
