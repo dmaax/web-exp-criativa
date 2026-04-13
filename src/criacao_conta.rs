@@ -7,6 +7,7 @@ use crate::login_db::conectar_escritor_leitor;
 use crate::mail;
 use rocket::serde::json::Value;
 use crate::autenticador;
+use crate::cria_cartao::{cvs_cartao, numeros_cartao, data_validade_cartao};
 use openssl::rsa::Rsa;
 use openssl::symm::{decrypt, Cipher};
 #[allow(deprecated)]
@@ -155,7 +156,57 @@ pub fn confirma_mfa_conta(dados: Json<ValidaMfaConta>) -> Json<Value> {
             let codigo_valido = autenticador::valida_codigo_autenticador(&usuario.codigo_2fa);
             
             if codigo_valido == dados.codigo_mfa {
-                Json(serde_json::json!({"status": 1, "message": "MFA confirmado com sucesso"}))
+                // Criar conta
+                let conta_result = diesel::insert_into(crate::schema::contas::dsl::contas)
+                    .values((
+                        crate::schema::contas::dsl::usuario_id.eq(usuario.id),
+                        crate::schema::contas::dsl::saldo.eq("0.00"),
+                    ))
+                    .returning(crate::schema::contas::dsl::id)
+                    .get_result::<i32>(&mut conn);
+
+                match conta_result {
+                    Ok(conta_id) => {
+                        // Criar cartão
+                        let cartao_result = diesel::insert_into(crate::schema::cartoes::dsl::cartoes)
+                            .values((
+                                crate::schema::cartoes::dsl::conta_id.eq(conta_id),
+                                crate::schema::cartoes::dsl::numero_cartao.eq(numeros_cartao()),
+                                crate::schema::cartoes::dsl::codigo_cartao.eq(cvs_cartao()),
+                                crate::schema::cartoes::dsl::data_cartao.eq(data_validade_cartao()),
+                                crate::schema::cartoes::dsl::saldo_disponivel.eq("10000.00"),
+                                crate::schema::cartoes::dsl::saldo_usado.eq("0.00"),
+                            ))
+                            .execute(&mut conn);
+
+                        // Criar empréstimo
+                        let emprestimo_result = diesel::insert_into(crate::schema::emprestimos::dsl::emprestimos)
+                            .values((
+                                crate::schema::emprestimos::dsl::conta_id.eq(conta_id),
+                                crate::schema::emprestimos::dsl::valor_disponivel.eq("0.00"),
+                                crate::schema::emprestimos::dsl::valor_emprestado.eq("0.00"),
+                            ))
+                            .execute(&mut conn);
+
+                        // Criar extrato inicial
+                        let extrato_result = diesel::insert_into(crate::schema::extratos::dsl::extratos)
+                            .values((
+                                crate::schema::extratos::dsl::conta_id.eq(conta_id),
+                                crate::schema::extratos::dsl::nome_compra.eq("Conta criada"),
+                                crate::schema::extratos::dsl::valor.eq("0.00"),
+                            ))
+                            .execute(&mut conn);
+
+                        if cartao_result.is_ok() && emprestimo_result.is_ok() && extrato_result.is_ok() {
+                            Json(serde_json::json!({"status": 1, "message": "MFA confirmado e conta criada com sucesso"}))
+                        } else {
+                            Json(serde_json::json!({"status": 3, "message": "Erro ao criar dados da conta"}))
+                        }
+                    },
+                    Err(_) => {
+                        Json(serde_json::json!({"status": 3, "message": "Erro ao criar conta"}))
+                    }
+                }
             } else {
                 Json(serde_json::json!({"status": 2, "message": "Código MFA inválido"}))
             }
